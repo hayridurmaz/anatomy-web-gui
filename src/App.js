@@ -33,7 +33,7 @@ class App extends Component {
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
-          <p>{this.state.response}</p>
+          <p>{this.state.response} GELDİ</p>
           <a
             className="App-link"
             href="https://reactjs.org"
