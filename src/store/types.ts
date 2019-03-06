@@ -29,3 +29,24 @@ export interface Survey {
   questions: Question[];
   valid: Boolean;
 }
+
+enum mediaTypes {image, video}
+
+export interface Topic {
+  id: number,
+  name: string
+}
+
+export interface System {
+  id: number,
+  name: string
+}
+
+export interface Media{
+  id: number,
+  dataUrl: string,
+  mediaType: mediaTypes,
+  systemId: number,
+  topicId: number,
+  thumbnailUrl: string
+}

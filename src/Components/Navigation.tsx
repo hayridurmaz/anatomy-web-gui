@@ -14,7 +14,7 @@ class Navigation extends React.Component<IProps & ReduxProps> {
   render() {
     if (this.props.isLoggedIn) {
       return (
-        <nav className={"deep-purple darken-1"} >
+        <nav className={"deep-purple darken-1"}>
           <div className="header">
             <Link to={"/"}>
               <img src="https://www.tedu.edu.tr/sites/default/files/logo_tr_1.png" />
@@ -25,6 +25,12 @@ class Navigation extends React.Component<IProps & ReduxProps> {
               </Link>
               <Link to={"/quizzes"}>
                 <p className={"white-text"}>Add Quiz</p>
+              </Link>
+              <Link to={"/systems"}>
+                <p className={"white-text"}>Systems</p>
+              </Link>
+              <Link to={"/topics"}>
+                <p className={"white-text"}>Topics</p>
               </Link>
               <Link to={"/images"}>
                 <p className={"white-text"}>Add Image</p>
