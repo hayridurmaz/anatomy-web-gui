@@ -20,7 +20,7 @@ import {
 import InlineEdit from "react-edit-inline";
 import { format } from "path";
 import { type } from "os";
-import SystemRow from "src/Components/SystemRow";
+import SystemRow from "src/Components/SystemTopicRow";
 var ProgressBar = require("react-progressbar").default;
 
 interface IProps {}
