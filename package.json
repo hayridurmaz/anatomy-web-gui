@@ -9,6 +9,7 @@
     "react-bootstrap-sweetalert": "^4.4.1",
     "react-confirm-alert": "^2.3.0",
     "react-dom": "^16.8.2",
+    "react-edit-inline": "^1.0.8",
     "react-firebase-file-uploader": "^2.4.2",
     "react-progressbar": "^15.4.1",
     "react-redux": "^6.0.1",
