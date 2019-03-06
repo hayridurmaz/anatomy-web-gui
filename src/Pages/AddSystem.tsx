@@ -5,6 +5,9 @@ import { Redirect } from "react-router";
 import { Link } from "react-router-dom";
 import ToggleButton from "react-toggle-button";
 import { getDate } from "../utils/utils";
+import Axios from "axios";
+import { Segment } from "semantic-ui-react";
+import { format } from "path";
 var ProgressBar = require("react-progressbar").default;
 
 interface IProps {}
@@ -17,7 +20,7 @@ class AddSystem extends React.Component<IProps & ReduxProps> {
     title: "",
     tarih: "",
     yazar: "Öğrenci Konseyi",
-    newsArray: [],
+    systemsArray: [] as types.System[],
     selectedDuyuruTipi: "duyuru",
     imgUrl: "",
     isUploading: false,
@@ -53,31 +56,22 @@ class AddSystem extends React.Component<IProps & ReduxProps> {
     //TODO: Get
   }
 
-  renderNews = () => {
-    if (this.state.newsArray.length <= 10) {
-      return this.state.newsArray.map((item, id) => {
-        return (
-          <div key={id} style={{ border: "10px black" }}>
-            <Link to={{ pathname: "/detailNews", state: { news: item } }}>
-              <h3 className={"white-text"}>{item["header"]}</h3>
-            </Link>
-            <p key={id}>
-              {"" + item["content"].substr(0, 30)}
-              ...
-            </p>
-            Gösterilsin mi:{" "}
-            <ToggleButton
-              value={item["valid"] || false}
-              onToggle={value => {}}
-            />
-            <hr />
-          </div>
-        );
+  componentDidMount() {
+    Axios.get("http://188.166.49.57:8080/Systems").then(response => {
+      this.setState({ systemsArray: response.data });
+      console.log(response.data);
+    });
+  }
+
+  renderSystems = () => {
+    if (this.state.systemsArray.length <= 10) {
+      return this.state.systemsArray.map((item, id) => {
+        return <Segment pilled>{item.name}</Segment>;
       });
     } else {
-      let arr = this.state.newsArray.slice(
-        this.state.newsArray.length - 10,
-        this.state.newsArray.length
+      let arr = this.state.systemsArray.slice(
+        this.state.systemsArray.length - 10,
+        this.state.systemsArray.length
       );
       return arr.map((item, id) => {
         return (
@@ -118,7 +112,7 @@ class AddSystem extends React.Component<IProps & ReduxProps> {
     this.setState({ avatar: filename, progress: 100, isUploading: false });
   };
 
-  render() {
+  form = () => {
     let progressing;
     if (this.state.isUploading || this.state.progress === 100) {
       progressing = (
@@ -135,114 +129,118 @@ class AddSystem extends React.Component<IProps & ReduxProps> {
     } else {
       progressing = <div />;
     }
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <div style={{ flex: 1, margin: 10 }}>
+          <label>
+            Başlık:
+            <input
+              value={this.state.title}
+              style={{ marginLeft: 20 }}
+              onChange={e => {
+                this.setState({ title: e.target.value });
+              }}
+            />
+          </label>
+        </div>
+
+        <label>
+          <div style={{ flex: 1, margin: 10 }}>
+            <p> Haber:</p>
+            <textarea
+              value={this.state.news}
+              style={{ height: 300, width: 900 }}
+              onChange={e => {
+                this.setState({ news: e.target.value });
+              }}
+            />
+          </div>
+        </label>
+        <div style={{ flex: 1, margin: 10 }}>
+          <label>
+            Tarih:
+            <input value={this.state.tarih} style={{ marginLeft: 20 }} />
+          </label>
+        </div>
+        <div style={{ flex: 1, margin: 10 }}>
+          <label>
+            Yazar:
+            <input
+              value={this.state.yazar}
+              contentEditable={true}
+              style={{ marginLeft: 20 }}
+            />
+          </label>
+        </div>
+
+        <div style={{ flex: 1, margin: 10 }}>
+          <label>
+            Resim:
+            {/* <FileUploader
+            accept="image/*"
+            name="avatar"
+            randomizeFilename
+            storageRef={firebase.storage().ref("images")}
+            onUploadStart={this.handleUploadStart}
+            onUploadError={this.handleUploadError}
+            onUploadSuccess={this.handleUploadSuccess}
+            onProgress={this.handleProgress}
+          /> */}
+            {progressing}
+          </label>
+        </div>
+
+        <div style={{ flex: 1, margin: 10 }}>
+          <label>
+            Haber tipi:
+            <div className="radio">
+              <label>
+                <input
+                  type="radio"
+                  value="duyuru"
+                  checked={this.state.selectedDuyuruTipi === "duyuru"}
+                  onChange={this.handleOptionChange}
+                />
+                Duyuru
+              </label>
+            </div>
+            <div className="radio">
+              <label>
+                <input
+                  type="radio"
+                  value="etkinlik"
+                  checked={this.state.selectedDuyuruTipi === "etkinlik"}
+                  onChange={this.handleOptionChange}
+                />
+                Etkinlik
+              </label>
+            </div>
+            <div className="radio">
+              <label>
+                <input
+                  type="radio"
+                  value="haber"
+                  checked={this.state.selectedDuyuruTipi === "haber"}
+                  onChange={this.handleOptionChange}
+                />
+                Haber
+              </label>
+            </div>
+          </label>
+        </div>
+        <input type="submit" value="Submit" />
+      </form>
+    );
+  };
+
+  render() {
     if (this.props.isLoggedIn) {
       return (
         <div className={"container"}>
           <h1 className={"teal-text"}> Haber ekle</h1>
-          <div className={"card-pannel z-depth-5 teal"}>
-            <form onSubmit={this.handleSubmit}>
-              <div style={{ flex: 1, margin: 10 }}>
-                <label>
-                  Başlık:
-                  <input
-                    value={this.state.title}
-                    style={{ marginLeft: 20 }}
-                    onChange={e => {
-                      this.setState({ title: e.target.value });
-                    }}
-                  />
-                </label>
-              </div>
-
-              <label>
-                <div style={{ flex: 1, margin: 10 }}>
-                  <p> Haber:</p>
-                  <textarea
-                    value={this.state.news}
-                    style={{ height: 300, width: 900 }}
-                    onChange={e => {
-                      this.setState({ news: e.target.value });
-                    }}
-                  />
-                </div>
-              </label>
-              <div style={{ flex: 1, margin: 10 }}>
-                <label>
-                  Tarih:
-                  <input value={this.state.tarih} style={{ marginLeft: 20 }} />
-                </label>
-              </div>
-              <div style={{ flex: 1, margin: 10 }}>
-                <label>
-                  Yazar:
-                  <input
-                    value={this.state.yazar}
-                    contentEditable={true}
-                    style={{ marginLeft: 20 }}
-                  />
-                </label>
-              </div>
-
-              <div style={{ flex: 1, margin: 10 }}>
-                <label>
-                  Resim:
-                  {/* <FileUploader
-                    accept="image/*"
-                    name="avatar"
-                    randomizeFilename
-                    storageRef={firebase.storage().ref("images")}
-                    onUploadStart={this.handleUploadStart}
-                    onUploadError={this.handleUploadError}
-                    onUploadSuccess={this.handleUploadSuccess}
-                    onProgress={this.handleProgress}
-                  /> */}
-                  {progressing}
-                </label>
-              </div>
-
-              <div style={{ flex: 1, margin: 10 }}>
-                <label>
-                  Haber tipi:
-                  <div className="radio">
-                    <label>
-                      <input
-                        type="radio"
-                        value="duyuru"
-                        checked={this.state.selectedDuyuruTipi === "duyuru"}
-                        onChange={this.handleOptionChange}
-                      />
-                      Duyuru
-                    </label>
-                  </div>
-                  <div className="radio">
-                    <label>
-                      <input
-                        type="radio"
-                        value="etkinlik"
-                        checked={this.state.selectedDuyuruTipi === "etkinlik"}
-                        onChange={this.handleOptionChange}
-                      />
-                      Etkinlik
-                    </label>
-                  </div>
-                  <div className="radio">
-                    <label>
-                      <input
-                        type="radio"
-                        value="haber"
-                        checked={this.state.selectedDuyuruTipi === "haber"}
-                        onChange={this.handleOptionChange}
-                      />
-                      Haber
-                    </label>
-                  </div>
-                </label>
-              </div>
-              <input type="submit" value="Submit" />
-            </form>
-          </div>
+          <div className={"card-pannel z-depth-5 teal"}>{this.form()}</div>
           <h1 className={"teal-text"}> Haberler</h1>
-          {this.renderNews()}
+          <Segment.Group>{this.renderSystems()}</Segment.Group>
         </div>
       );
     } else {
