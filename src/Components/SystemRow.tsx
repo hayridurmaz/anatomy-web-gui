@@ -52,11 +52,13 @@ class SystemRow extends React.Component<IProps & ReduxProps> {
                       circular
                       link
                       onClick={() => {
-                        this.props.editItem(
-                          this.props.item,
-                          this.state.editedStr
-                        );
-                        this.setState({ editedStr: "" });
+                        if (this.state.editedStr != "") {
+                          this.props.editItem(
+                            this.props.item,
+                            this.state.editedStr
+                          );
+                          this.setState({ editedStr: "" });
+                        }
                       }}
                     />
                   }
