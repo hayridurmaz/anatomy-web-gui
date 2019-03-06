@@ -23,9 +23,9 @@ import { type } from "os";
 var ProgressBar = require("react-progressbar").default;
 
 interface IProps {
-  item: types.System;
-  editItem: (item: types.System, newSystem: string) => {};
-  deleteItem: (item: types.System) => {};
+  item: types.System | types.Topic;
+  editItem: (item: types.System | types.Topic, newSystem: string) => {};
+  deleteItem: (item: types.System | types.Topic) => {};
 }
 interface ReduxProps {
   isLoggedIn?: boolean;

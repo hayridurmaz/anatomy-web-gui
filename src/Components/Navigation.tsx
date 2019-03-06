@@ -29,6 +29,9 @@ class Navigation extends React.Component<IProps & ReduxProps> {
               <Link to={"/systems"}>
                 <p className={"white-text"}>Systems</p>
               </Link>
+              <Link to={"/topics"}>
+                <p className={"white-text"}>Topics</p>
+              </Link>
               <Link to={"/images"}>
                 <p className={"white-text"}>Add Image</p>
               </Link>
