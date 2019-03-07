@@ -11,6 +11,7 @@ import FileUploader from "react-firebase-file-uploader";
 import Axios from "axios";
 import { Dropdown } from 'semantic-ui-react'
 import { type } from "os";
+import ImageRow from "../Components/ImageRow"
 
 var ProgressBar = require("react-progressbar").default;
 
@@ -35,7 +36,8 @@ class AddImage extends React.Component<IProps & ReduxProps> {
         chosenTopics: [] as number[],
         chosenSystem: -1 as number,
         dataUrl: "",
-        media: {} as types.Media
+        images: [] as types.Media[],
+        
 
     };
 
@@ -74,19 +76,19 @@ class AddImage extends React.Component<IProps & ReduxProps> {
             console.log(this.state.chosenTopics)
             console.log(this.state.dataUrl)
             let media = {} as types.Media
-            media.dataUrl = this.state.dataUrl
-            media.mediaType = types.mediaTypes.image
-            media.systemId = this.state.chosenSystem
-            media.topicId = this.state.chosenTopics
-            media.thumbnailUrl = ""
+            media.data_url = this.state.dataUrl
+            media.media_type = types.mediaTypes.image
+            media.system_id = this.state.chosenSystem
+            media.topic_ids = this.state.chosenTopics
+            media.thumbnail_url = ""
             console.log(JSON.stringify(media))
             
-            Axios.post("http://188.166.49.57:8080/Media", {
-                data_url: media.dataUrl,
-                media_type: media.mediaType,
-                thumbnail_url : "",
-                system_id : media.systemId,
-                topic_ids: media.topicId
+            Axios.post("http://localhost:8080/Media", {
+                data_url: media.data_url,
+                media_type: media.media_type,
+                thumbnail_url : media.thumbnail_url,
+                system_id : media.system_id,
+                topic_ids: media.topic_ids
         
             }).catch(error => console.log(error))
             this.setState({ chosenSystem: -1, chosenTopics: [] });
@@ -142,68 +144,43 @@ class AddImage extends React.Component<IProps & ReduxProps> {
                 this.setState({ systemOptions: systemsForDropdown })
             })
 
+            Axios.get('http://188.166.49.57:8080/Media')
+            .then((response) => { return response.data }).then((currImages: types.Media[]) => {
+                this.setState({images: currImages},() => console.log(this.state.images))
+            })
+
     }
 
-    renderNews = () => {
-        if (this.state.newsArray.length <= 10) {
-            return this.state.newsArray.map((item, id) => {
-                return (
-                    <div key={id} style={{ border: "10px black" }}>
-                        <Link to={{ pathname: "/detailNews", state: { news: item } }}>
-                            <h3 className={"white-text"}>{item["header"]}</h3>
-                        </Link>
-                        <p key={id}>
-                            {"" + item["content"].substr(0, 30)}
-                            ...
-            </p>
-                        Gösterilsin mi:{" "}
-                        <ToggleButton
-                            value={item["valid"] || false}
-                            onToggle={value => {
-                                item["valid"] = !value;
-                                firebase
-                                    .database()
-                                    .ref("/councilNews")
-                                    .child(item["id"])
-                                    .set(item);
-                            }}
-                        />
-                        <hr />
-                    </div>
-                );
-            });
-        } else {
-            let arr = this.state.newsArray.slice(
-                this.state.newsArray.length - 10,
-                this.state.newsArray.length
-            );
-            return arr.map((item, id) => {
-                return (
-                    <div key={id}>
-                        <Link to={{ pathname: "/detailNews", state: { news: item } }}>
-                            <h3 className={"white-text"}>{item["header"]}</h3>
-                        </Link>
-                        <p key={id}>
-                            {"" + item["content"].substr(0, 30)}
-                            ...
-            </p>
-                        Gösterilsin mi:{" "}
-                        <ToggleButton
-                            value={item["valid"] || false}
-                            onToggle={value => {
-                                item["valid"] = !value;
-                                firebase
-                                    .database()
-                                    .ref("/councilNews")
-                                    .child(item["id"])
-                                    .set(item);
-                            }}
-                        />
-                        <hr />
-                    </div>
-                );
-            });
+    updateSystem = (item: types.System, newName: string) => {
+        Axios.put("http://188.166.49.57:8080/Systems/" + item.id, {
+          name: newName
+        }).then(response => {
+          //this.getSystems();
+        });
+      };
+    
+      deleteSystem = (item: types.System) => {
+        if (window.confirm("Are you sure you want to delete the system?")) {
+          //TODO: Send to the webservice
+          Axios.delete("http://188.166.49.57:8080/Systems/" + item.id).then(
+            response => {
+             // this.getSystems();
+            }
+          );
         }
+      };
+
+    renderImages = () => {
+        return this.state.images.map((item, id) => {
+            return (
+              <ImageRow
+                key={id}
+                item={item}
+                editItem={this.updateSystem}
+                deleteItem={this.deleteSystem}
+              />
+            );
+          });
     };
     handleOptionChange = changeEvent => {
         this.setState({
@@ -317,7 +294,7 @@ class AddImage extends React.Component<IProps & ReduxProps> {
                         </form>
                     </div>
                     <h1 className={"teal-text"}> Images</h1>
-                    {this.renderNews()}
+                    {this.renderImages()}
                 </div>
             );
         } else {
