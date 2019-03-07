@@ -12,6 +12,7 @@ import Logout from "./Components/Logout";
 import AddImage from "./Pages/AddImage";
 import * as firebase from "firebase";
 import AddSystem from "./Pages/AddSystem";
+import AddTopic from "./Pages/AddTopic";
 
 class App extends React.Component {
   constructor(prop: any) {
@@ -38,6 +39,7 @@ class App extends React.Component {
         <Route exact={true} path={"/images"} component={AddImage} />
         <Route exact={true} path={"/classes"} component={AddClass} />
         <Route exact={true} path={"/systems"} component={AddSystem} />
+        <Route exact={true} path={"/topics"} component={AddTopic} />
         <Route exact={true} path={"/detailClasses"} component={ClassDetail} />
         <Route exact={true} path={"/detailQuizzes"} component={QuizDetail} />
         <Route exact={true} path={"/login"} component={Login} />
