@@ -11,7 +11,7 @@ import FileUploader from "react-firebase-file-uploader";
 import Axios from "axios";
 import { Dropdown } from 'semantic-ui-react'
 import { type } from "os";
-import ImageRow from "../Components/ImageRow"
+import VideoRow from "../Components/VideoRow"
 
 var ProgressBar = require("react-progressbar").default;
 
@@ -19,7 +19,7 @@ interface IProps { }
 interface ReduxProps {
     isLoggedIn?: boolean;
 }
-class AddImage extends React.Component<IProps & ReduxProps> {
+class AddVideo extends React.Component<IProps & ReduxProps> {
     state = {
         tarih: "",
         isUploading: false,
@@ -29,7 +29,7 @@ class AddImage extends React.Component<IProps & ReduxProps> {
         chosenTopics: [] as number[],
         chosenSystem: -1 as number,
         dataUrl: "",
-        images: [] as types.Media[],
+        videos: [] as types.Media[],
 
 
     };
@@ -40,7 +40,7 @@ class AddImage extends React.Component<IProps & ReduxProps> {
             event.preventDefault();
             return;
         }
-        if (window.confirm("Sure to save image?")) {
+        if (window.confirm("Sure to save video?")) {
             event.preventDefault();
             /*let image = {
                  author: this.state.yazar,
@@ -70,7 +70,7 @@ class AddImage extends React.Component<IProps & ReduxProps> {
             //console.log(this.state.dataUrl)
             let media = {} as types.Media
             media.data_url = this.state.dataUrl
-            media.mediaType = types.mediaTypes.Image
+            media.mediaType = types.mediaTypes.Video
             media.system_id = this.state.chosenSystem
             media.topic_ids = this.state.chosenTopics
             media.thumbnail_url = ""
@@ -151,22 +151,23 @@ class AddImage extends React.Component<IProps & ReduxProps> {
 
         Axios.get('http://188.166.49.57:8080/Media')
             .then((response) => { return response.data }).then((allMedia: types.Media[]) => {
-                let images = []
-                allMedia.forEach((item)=>{
-                    if(String(item.mediaType) === types.mediaTypes[0]){
-                        images.push(item)
+                let videos = []
+                allMedia.forEach((item : types.Media)=>{
+                    if(String(item.mediaType) === types.mediaTypes[1]){
+                        videos.push(item)
                     }
                 })
-                this.setState({ images: images }, () => console.log(this.state.images))
+                this.setState({ videos: videos }, () => console.log(this.state.videos))
+
             })
 
     }
 
 
-    renderImages = () => {
-        return this.state.images.map((item, id) => {
+    renderVideos = () => {
+        return this.state.videos.map((item, id) => {
             return (
-                <ImageRow
+                <VideoRow
                     key={id}
                     item={item}
                     topics={this.state.topicOptions}
@@ -187,10 +188,10 @@ class AddImage extends React.Component<IProps & ReduxProps> {
         this.setState({ avatar: filename, progress: 100});
         firebase
             .storage()
-            .ref("images")
+            .ref("videos")
             .child(filename)
             .getDownloadURL()
-            .then(url => this.setState({ dataUrl: url, isUploading: false  }));
+            .then(url => this.setState({ dataUrl: url, isUploading: false }));
     };
 
     renderHOC = (wrappedComponent: React.Component, isLoggedIn: boolean) => {
@@ -238,7 +239,7 @@ class AddImage extends React.Component<IProps & ReduxProps> {
         if (this.props.isLoggedIn) {
             return (
                 <div className={"container"}>
-                    <h1 className={"teal-text"}>Add Image</h1>
+                    <h1 className={"teal-text"}>Add Video</h1>
                     <div className={"card-pannel z-depth-5 teal"}>
                         <form onSubmit={this.handleSubmit}>
 
@@ -258,12 +259,12 @@ class AddImage extends React.Component<IProps & ReduxProps> {
 
                             <div style={{ flex: 1, margin: 10 }}>
                                 <label>
-                                    Choose image:
+                                    Choose video:
                   <FileUploader
-                                        accept="image/*"
+                                        accept="video/*"
                                         name="avatar"
                                         randomizeFilename
-                                        storageRef={firebase.storage().ref("images")}
+                                        storageRef={firebase.storage().ref("videos")}
                                         onUploadStart={this.handleUploadStart}
                                         onUploadError={this.handleUploadError}
                                         onUploadSuccess={this.handleUploadSuccess}
@@ -282,8 +283,8 @@ class AddImage extends React.Component<IProps & ReduxProps> {
                             <input style={{ marginLeft: 20 }} disabled={this.state.isUploading} type="submit" value="Submit" />
                         </form>
                     </div>
-                    <h1 className={"teal-text"}> Images</h1>
-                    {this.renderImages()}
+                    <h1 className={"teal-text"}> Videos </h1>
+                    {this.renderVideos()}
                 </div>
             );
         } else {
@@ -296,4 +297,4 @@ const mapStateToProps = (state: types.GlobalState) => ({
     isLoggedIn: state.loggedIn
 });
 
-export default connect<{}, {}, ReduxProps>(mapStateToProps)(AddImage);
+export default connect<{}, {}, ReduxProps>(mapStateToProps)(AddVideo);

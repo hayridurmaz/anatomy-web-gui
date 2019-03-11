@@ -30,7 +30,7 @@ export interface Survey {
   valid: Boolean;
 }
 
-export enum mediaTypes {image, video}
+export enum mediaTypes {Image, Video}
 
 export interface Topic {
   id: number,
@@ -45,7 +45,7 @@ export interface System {
 export interface Media{
   id: number,
   data_url: string,
-  media_type: mediaTypes,
+  mediaType: mediaTypes,
   system_id: number,
   topic_ids: number[],
   thumbnail_url: string,

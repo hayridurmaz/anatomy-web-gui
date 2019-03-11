@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import ToggleButton from "react-toggle-button";
 import { getDate } from "../utils/utils";
 import * as firebase from "firebase";
+import ReactPlayer from 'react-player'
 import Axios from "axios";
 import {
     Segment,
@@ -29,13 +30,13 @@ var ProgressBar = require("react-progressbar").default;
 interface IProps {
     item: types.Media;
     systems: types.System[];
-    topics: types.Topic[]; 
+    topics: types.Topic[];
     refreshData: () => any;
 }
 interface ReduxProps {
     isLoggedIn?: boolean;
 }
-class ImageRow extends React.Component<IProps & ReduxProps> {
+class VideoRow extends React.Component<IProps & ReduxProps> {
     state = {
         editedStr: "",
         modify: false,
@@ -72,7 +73,7 @@ class ImageRow extends React.Component<IProps & ReduxProps> {
             event.preventDefault();
             return;
         }
-        if (window.confirm("Are you sure to modify image?")) {
+        if (window.confirm("Are you sure to modify video?")) {
             event.preventDefault();
             let media = {} as types.Media
             media.data_url = this.props.item.data_url
@@ -121,7 +122,7 @@ class ImageRow extends React.Component<IProps & ReduxProps> {
                         }).catch(function (error) {
                             // Uh-oh, an error occurred!
                             console.log(error)
-                            alert("Image cannot be deleted. Contact admin.");
+                            alert("Video cannot be deleted. Contact admin.");
                         });
                 }
             }).catch(error => console.log(error))
@@ -207,18 +208,22 @@ class ImageRow extends React.Component<IProps & ReduxProps> {
                     <List.Item>
                         <List.Content>
                             <List.Header>
-                                <Image style={{ marginLeft: 20 }} src={this.props.item.data_url} size='small' />
+                                <ReactPlayer
+                                    url={this.props.item.data_url}
+                                    //playing
+                                    controls
+                                />
                                 <div style={{ marginTop: 40, marginBottom: 50 }} >
                                     <div style={{ marginBottom: 20 }} >
                                         <label>
-                                            <span style={{ fontSize: 20, fontWeight: 400, marginLeft: 20, fontStyle: "sans" }} >Topics added to image:</span>
+                                            <span style={{ fontSize: 20, fontWeight: 400, marginLeft: 20, fontStyle: "sans" }} >Topics added to video:</span>
                                             <br />
                                             {topicInfo}
                                         </label>
                                     </div>
                                     <div style={{ marginTop: 20 }} >
                                         <label>
-                                            <span style={{ fontSize: 20, fontWeight: 400, marginLeft: 20, fontStyle: "sans" }} >System that image belongs to:</span>
+                                            <span style={{ fontSize: 20, fontWeight: 400, marginLeft: 20, fontStyle: "sans" }} >System that video belongs to:</span>
                                             <br />
                                             {systemInfo}
                                         </label>
@@ -243,4 +248,4 @@ const mapStateToProps = (state: types.GlobalState) => ({
     isLoggedIn: state.loggedIn
 });
 
-export default connect<{}, {}, ReduxProps>(mapStateToProps)(ImageRow);
+export default connect<{}, {}, ReduxProps>(mapStateToProps)(VideoRow);

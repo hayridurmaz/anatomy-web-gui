@@ -11,6 +11,7 @@
     "react-dom": "^16.8.2",
     "react-edit-inline": "^1.0.8",
     "react-firebase-file-uploader": "^2.4.2",
+    "react-player": "^1.9.3",
     "react-progressbar": "^15.4.1",
     "react-redux": "^6.0.1",
     "react-router-dom": "^4.3.1",

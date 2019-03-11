@@ -35,6 +35,9 @@ class Navigation extends React.Component<IProps & ReduxProps> {
               <Link to={"/images"}>
                 <p className={"white-text"}>Add Image</p>
               </Link>
+              <Link to={"/videos"}>
+                <p className={"white-text"}>Add Video</p>
+              </Link>
               <Link to={"/logout"}>
                 <p className={"white-text"}>Log Out</p>
               </Link>
