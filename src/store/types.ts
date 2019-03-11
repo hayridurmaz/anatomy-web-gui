@@ -43,11 +43,13 @@ export interface System {
 }
 
 export interface Media{
+  id: number,
   data_url: string,
   media_type: mediaTypes,
   system_id: number,
   topic_ids: number[],
   thumbnail_url: string,
+  date: string,
   topics?: Topic[],
   system?: System
 }

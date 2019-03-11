@@ -21,23 +21,16 @@ interface ReduxProps {
 }
 class AddImage extends React.Component<IProps & ReduxProps> {
     state = {
-        news: "",
-        title: "",
         tarih: "",
-        yazar: "Öğrenci Konseyi",
-        newsArray: [],
-        selectedDuyuruTipi: "duyuru",
         isUploading: false,
         progress: 0,
-
-
         topicOptions: [],
         systemOptions: [],
         chosenTopics: [] as number[],
         chosenSystem: -1 as number,
         dataUrl: "",
         images: [] as types.Media[],
-        
+
 
     };
 
@@ -72,29 +65,37 @@ class AddImage extends React.Component<IProps & ReduxProps> {
                   .child(news.id)
                   .set(news);
               });*/
-            console.log(this.state.chosenSystem)
-            console.log(this.state.chosenTopics)
-            console.log(this.state.dataUrl)
+            //console.log(this.state.chosenSystem)
+            //console.log(this.state.chosenTopics)
+            //console.log(this.state.dataUrl)
             let media = {} as types.Media
             media.data_url = this.state.dataUrl
             media.media_type = types.mediaTypes.image
             media.system_id = this.state.chosenSystem
             media.topic_ids = this.state.chosenTopics
             media.thumbnail_url = ""
+            media.date = this.state.tarih
             console.log(JSON.stringify(media))
-            
+
             Axios.post("http://localhost:8080/Media", {
                 data_url: media.data_url,
                 media_type: media.media_type,
-                thumbnail_url : media.thumbnail_url,
-                system_id : media.system_id,
-                topic_ids: media.topic_ids
-        
+                thumbnail_url: media.thumbnail_url,
+                system_id: media.system_id,
+                topic_ids: media.topic_ids,
+                date: media.date
+            }).then((res) => {
+                console.log(res)
+                if (res.status === 200) {
+            this.getDataFromServer() //to get newly added pictures 
+                }
             }).catch(error => console.log(error))
-            this.setState({ chosenSystem: -1, chosenTopics: [] });
+            this.setState({ chosenSystem: -1, chosenTopics: [], dataUrl: "", progress: 0 });
+            this.getDataFromServer() //to get newly added pictures 
         }
         event.preventDefault();
     };
+
     componentWillMount() {
         this.setState({ tarih: getDate() });
         firebase
@@ -107,6 +108,10 @@ class AddImage extends React.Component<IProps & ReduxProps> {
                     this.setState({ newsArray: arr });
                 });
             });
+        this.getDataFromServer()
+    }
+
+    getDataFromServer = () => {
         interface DropdownInterface {
             key: string,
             value: number,
@@ -144,47 +149,25 @@ class AddImage extends React.Component<IProps & ReduxProps> {
                 this.setState({ systemOptions: systemsForDropdown })
             })
 
-            Axios.get('http://188.166.49.57:8080/Media')
+        Axios.get('http://188.166.49.57:8080/Media')
             .then((response) => { return response.data }).then((currImages: types.Media[]) => {
-                this.setState({images: currImages},() => console.log(this.state.images))
+                this.setState({ images: currImages }, () => console.log(this.state.images))
             })
 
     }
 
-    updateSystem = (item: types.System, newName: string) => {
-        Axios.put("http://188.166.49.57:8080/Systems/" + item.id, {
-          name: newName
-        }).then(response => {
-          //this.getSystems();
-        });
-      };
-    
-      deleteSystem = (item: types.System) => {
-        if (window.confirm("Are you sure you want to delete the system?")) {
-          //TODO: Send to the webservice
-          Axios.delete("http://188.166.49.57:8080/Systems/" + item.id).then(
-            response => {
-             // this.getSystems();
-            }
-          );
-        }
-      };
 
     renderImages = () => {
         return this.state.images.map((item, id) => {
             return (
-              <ImageRow
-                key={id}
-                item={item}
-                editItem={this.updateSystem}
-                deleteItem={this.deleteSystem}
-              />
+                <ImageRow
+                    key={id}
+                    item={item}
+                    topics={this.state.topicOptions}
+                    systems={this.state.systemOptions}
+                    refreshData={this.getDataFromServer}
+                />
             );
-          });
-    };
-    handleOptionChange = changeEvent => {
-        this.setState({
-            selectedDuyuruTipi: changeEvent.target.value
         });
     };
 
@@ -256,14 +239,14 @@ class AddImage extends React.Component<IProps & ReduxProps> {
                             <div style={{ flex: 1, margin: 10 }}>
                                 <label>
                                     Choose Topic:
-                  <Dropdown placeholder='Topic' fluid multiple selection options={this.state.topicOptions} onChange={(event, data) => { this.handleTopic(data.value); }} />
+                  <Dropdown placeholder='Topic' fluid multiple selection defaultValue={this.state.chosenTopics} options={this.state.topicOptions} onChange={(event, data) => { this.handleTopic(data.value); }} />
                                 </label>
                             </div>
 
                             <div style={{ flex: 1, margin: 10 }}>
                                 <label>
                                     Choose System:
-                  <Dropdown placeholder='System' fluid selection options={this.state.systemOptions} onChange={(event, data) => { this.handleSystem(data.value); }} />
+                  <Dropdown placeholder='System' fluid selection defaultValue={this.state.chosenSystem} options={this.state.systemOptions} onChange={(event, data) => { this.handleSystem(data.value); }} />
                                 </label>
                             </div>
 
@@ -286,11 +269,11 @@ class AddImage extends React.Component<IProps & ReduxProps> {
 
                             <div style={{ flex: 1, margin: 10 }}>
                                 <label>
-                                    Tarih:
-                  <input value={this.state.tarih} style={{ marginLeft: 20 }} />
+            {/*Date: */}
+                                <input hidden value={this.state.tarih} style={{ marginLeft: 20 }} />
                                 </label>
                             </div>
-                            <input type="submit" value="Submit" />
+                            <input style={{ marginLeft: 20 }}  type="submit" value="Submit" />
                         </form>
                     </div>
                     <h1 className={"teal-text"}> Images</h1>
