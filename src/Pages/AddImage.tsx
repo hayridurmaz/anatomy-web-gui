@@ -15,6 +15,10 @@ import ImageRow from "../Components/ImageRow"
 
 var ProgressBar = require("react-progressbar").default;
 
+//188.166.49.57
+//localhost
+var SERVER_URL = "http://localhost:8080"
+
 interface IProps { }
 interface ReduxProps {
     isLoggedIn?: boolean;
@@ -75,9 +79,8 @@ class AddImage extends React.Component<IProps & ReduxProps> {
             media.topic_ids = this.state.chosenTopics
             media.thumbnail_url = ""
             media.date = this.state.tarih
-            console.log(JSON.stringify(media))
 
-            Axios.post("http://localhost:8080/Media", {
+            Axios.post(SERVER_URL+"/Media", {
                 data_url: media.data_url,
                 media_type: media.mediaType,
                 thumbnail_url: media.thumbnail_url,
@@ -118,7 +121,7 @@ class AddImage extends React.Component<IProps & ReduxProps> {
             text: string
         }
         // stateOptions = [ { key: 'AL', value: 'AL', text: 'Alabama' }, ...  ]
-        Axios.get('http://188.166.49.57:8080/Topics')
+        Axios.get(SERVER_URL+'/Topics')
             .then((response) => { return response.data }).then((topics: types.Topic[]) => {
                 let topicsForDropdown: DropdownInterface[] = []
                 topics.map((topic, id) => {
@@ -133,7 +136,7 @@ class AddImage extends React.Component<IProps & ReduxProps> {
                 this.setState({ topicOptions: topicsForDropdown })
             })
 
-        Axios.get('http://188.166.49.57:8080/Systems')
+        Axios.get(SERVER_URL+'/Systems')
             .then((response) => { return response.data }).then((systems: types.System[]) => {
 
                 let systemsForDropdown: DropdownInterface[] = []
@@ -149,7 +152,7 @@ class AddImage extends React.Component<IProps & ReduxProps> {
                 this.setState({ systemOptions: systemsForDropdown })
             })
 
-        Axios.get('http://188.166.49.57:8080/Media')
+        Axios.get(SERVER_URL+'/Media')
             .then((response) => { return response.data }).then((allMedia: types.Media[]) => {
                 let images = []
                 allMedia.forEach((item)=>{
