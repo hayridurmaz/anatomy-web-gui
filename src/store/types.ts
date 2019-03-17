@@ -12,22 +12,33 @@ export interface Action {
   type: string;
   loggedIn?: boolean;
 }
-
-export interface Question {
-  question: string;
-  answers: Answer[];
-  currentPressedAnswers: number;
-}
-
-export interface Answer {
-  text: string;
-  count: number;
-}
-
 export interface Survey {
   name: string;
   questions: Question[];
   valid: Boolean;
+}
+
+export interface Answer {
+  id: Number;
+  atext: String;
+  question_id: Number;
+  correct: Boolean;
+}
+
+export interface Question {
+  id: Number;
+  hint: String;
+  qtext: String;
+  quiz_id: Number;
+  media_id: Number;
+  topic_id: Number;
+}
+
+export interface Quiz {
+  id: Number;
+  quiz_type_id: Number;
+  system_id: Number;
+  header: String;
 }
 
 export enum mediaTypes {Image, Video}

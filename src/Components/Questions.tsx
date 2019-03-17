@@ -35,11 +35,7 @@ export default class Questions extends React.Component<IProps> {
   takeQuestions = () => {
     return this.questionElements.map((item, id) => {
       return (
-        <QuestionInput
-          isSent={this.props.isSent}
-          index={id}
-          sendSurveyBack={this.addQuestionToSurvey}
-        />
+        null
       );
     });
   };
