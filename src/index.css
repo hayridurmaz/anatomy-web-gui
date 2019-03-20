@@ -24,12 +24,25 @@ textarea {
 }
 /* Style the header with a grey background and some padding */
 .header {
-  overflow: hidden;
+  overflow: hidden;   
   background-color: #f1f1f1;
   padding: 20px 10px;
   /* display: flex; */
   align-items: center;
   justify-content: space-between;
+}
+
+.mediaItem {
+  flex: 1;
+  flex-direction: row;
+  display: flex;
+  justify-content: center;
+}
+
+.mediaItemImage {
+  display: flex;
+  flex: 1;
+  justify-content: center;
 }
 
 /* Style the header links */

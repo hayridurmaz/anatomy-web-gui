@@ -10,7 +10,6 @@ interface IProps {
   index: number;
   topics: any[];
   media: types.Media[];
-  sendData: boolean;
   getData: (question: types.Question) => any;
 }
 
@@ -25,34 +24,17 @@ export default class QuestionInput extends React.Component<IProps> {
     correctAnswerIndex: -100 as Number,
     openModal: false as boolean,
     answers: [] as types.Answer[],
-    sendData: false as boolean,
   };
 
   componentWillReceiveProps(nextProps: IProps) {
-    if (nextProps.sendData) {
-      this.setState({ sendData: true }, () => {
-        if(!this.state.sendData){
-          let que = {} as types.Question
-          que.qtext = this.state.questionText
-          que.hint = this.state.hint
-          que.media_id = this.state.mediaId
-          que.topic_id = this.state.topicId
-          que.answers = this.state.answers
-          que.id = this.props.index
-          this.props.getData(que)
-        }      
-      })
-
-
-
-    }
+  
   }
 
   componentWillMount = () => {
     //console.log(this.props.topics)
   }
   handleTopic = (value) => {
-    this.setState({ topicId: value })
+    this.setState({ topicId: value }, () => {this.sendDataParent()})
   }
 
   filterAnswerNumber = (e) => {
@@ -100,11 +82,11 @@ export default class QuestionInput extends React.Component<IProps> {
       //console.log(i)
       items.push(
         <AnswerInput
+          key={i}
           index={i}
           isCorrect={this.state.correctAnswerIndex === i}
           setCorrectAnswerIndex={this.setCorrectAnswerIndex}
           controlVar={this.state.correctAnswerIndex}
-          sendData={this.state.sendData}
           getData={this.getData}
         />
       )
@@ -114,22 +96,37 @@ export default class QuestionInput extends React.Component<IProps> {
 
   sendData = () => {
     event.preventDefault()
-    this.setState({ sendData: true })
   }
 
   getData = (answer: types.Answer) => {
     let exist = false
-    this.state.answers.forEach((Item) => {
+    let anss = this.state.answers
+    console.log(anss)
+    anss.forEach((Item) => {
       if (Item.id === answer.id) {
         exist = true
+        Item.atext = answer.atext
+        Item.correct = answer.correct
       }
     })
-    //if (!exist) {
-    var Answers = []
-    Answers.push(answer)
-    this.setState({ answers: Answers, sendData: false })
-    console.log(this.state.answers)
-    //}
+    if (!exist) {
+    anss.push(answer)
+    }
+    this.setState({ answers: anss}, () => {
+      this.sendDataParent()
+    })
+    //console.log(this.state.answers)
+  }
+
+  sendDataParent = () => {
+    let que = {} as types.Question
+    que.qtext = this.state.questionText
+    que.hint = this.state.hint
+    que.media_id = this.state.mediaId
+    que.topic_id = this.state.topicId
+    que.answers = this.state.answers
+    que.id = this.props.index
+    this.props.getData(que)
   }
 
   setCorrectAnswerIndex = (index: Number): any => {
@@ -142,6 +139,10 @@ export default class QuestionInput extends React.Component<IProps> {
     this.setState({ openModal: control })
   }
 
+  setMediaIndex = (index : number) => {
+    this.setState({mediaId : index}, () => {this.sendDataParent()})
+  }
+
   render() {
     return (
       <div key={this.props.index}>
@@ -152,7 +153,7 @@ export default class QuestionInput extends React.Component<IProps> {
             </span>
             <Input
               onChange={e => {
-                this.setState({ questionText: e.target.value });
+                this.setState({ questionText: e.target.value }, () => {this.sendDataParent()});
               }}
               value={this.state.questionText}
               style={{ marginLeft: 20 }}
@@ -169,7 +170,7 @@ export default class QuestionInput extends React.Component<IProps> {
             </span>
             <Input
               onChange={e => {
-                this.setState({ hint: e.target.value });
+                this.setState({ hint: e.target.value }, () => {this.sendDataParent()});
               }}
               value={this.state.hint}
               style={{ marginLeft: 20 }}
@@ -218,9 +219,9 @@ export default class QuestionInput extends React.Component<IProps> {
                         placeholder='Header'
                         action={
                           <div>
-                            <Button basic class="ui button" onClick={(event) => { this.decrementAnswerNumber(event) }} color='red' id="but1" content='' icon="minus" style={{ margin: 0, marginLeft: 2, borderRadius: 2, fontWeight: "bold", fontSize: 11.5, width: 43 }} />
-                            <Button basic class="ui button" onClick={(event) => { this.incrementAnswerNumber(event) }} color='green' id="but2" content='' icon="plus" style={{ margin: 0, marginLeft: 2, borderRadius: 2, fontWeight: "bold", fontSize: 11.5, width: 43 }} />
-                            <Button basic class="ui button" onClick={(event) => { this.resetAnswers(event) }} color='orange' id="but3" content='' icon="repeat" style={{ margin: 0, marginLeft: 2, borderRadius: 2, fontWeight: "bold", fontSize: 11.5, width: 43 }} />
+                            <Button basic className="ui button" onClick={(event) => { this.decrementAnswerNumber(event) }} color='red' id="but1" content='' icon="minus" style={{ margin: 0, marginLeft: 2, borderRadius: 2, fontWeight: "bold", fontSize: 11.5, width: 43 }} />
+                            <Button basic className="ui button" onClick={(event) => { this.incrementAnswerNumber(event) }} color='green' id="but2" content='' icon="plus" style={{ margin: 0, marginLeft: 2, borderRadius: 2, fontWeight: "bold", fontSize: 11.5, width: 43 }} />
+                            <Button basic className="ui button" onClick={(event) => { this.resetAnswers(event) }} color='orange' id="but3" content='' icon="repeat" style={{ margin: 0, marginLeft: 2, borderRadius: 2, fontWeight: "bold", fontSize: 11.5, width: 43 }} />
                           </div>
                         }
                       />
@@ -231,7 +232,7 @@ export default class QuestionInput extends React.Component<IProps> {
               </Grid.Column>
             </Grid.Row>
           </Grid>
-          <MediaPopup openModal={this.state.openModal} setModal={this.setModal} media={this.props.media} />
+          <MediaPopup openModal={this.state.openModal} setModal={this.setModal} media={this.props.media} setMediaIndex={this.setMediaIndex} />
         </div>
       </div>
     );

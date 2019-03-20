@@ -11,6 +11,7 @@ interface IProps {
   openModal: boolean;
   setModal: (control: boolean) => any
   media: types.Media[];
+  setMediaIndex: (index : number) => any;
 }
 
 export default class MediaPopup extends React.Component<IProps> {
@@ -48,11 +49,11 @@ export default class MediaPopup extends React.Component<IProps> {
   }
 
   setChosenMediaIndex = (index : number) => {
-    this.setState({chosenMedia: index}, () => {console.log( "upper cmp"  + this.state.chosenMedia)})
+    this.setState({chosenMedia: index}, () => {this.props.setMediaIndex(index)})
   }
 
   renderImageTab = () => {
-    let numOfRows = this.state.images.length / 2
+    let numOfRows = this.state.images.length / 2 //change 2 to change column number
     let rows = []
 
     let j = 1
@@ -60,7 +61,7 @@ export default class MediaPopup extends React.Component<IProps> {
       let columns = []
       for (; j % 4 != 0 && j - 1 < this.state.images.length; j++) {
         columns.push(
-          <Grid.Column>
+          <Grid.Column key={Math.floor(Math.random() * 10000)} >
             <MediaPopupItem
               media={this.state.images[j - 1]}
               index={j}
@@ -70,12 +71,12 @@ export default class MediaPopup extends React.Component<IProps> {
           </Grid.Column>
         )
       }
-      rows.push(<Grid.Row>{columns}</Grid.Row>)
+      rows.push(<Grid.Row key={Math.floor(Math.random() * 10000)} >{columns}</Grid.Row>)
     }
-    let grid = (<Grid columns={2} divided>
+    //change 2 to change column number
+    return (<Grid columns={2} divided>
       {rows}
     </Grid>)
-    this.setState({ imageGrid: grid })
   }
 
   renderVideoTab = () => {
@@ -87,7 +88,7 @@ export default class MediaPopup extends React.Component<IProps> {
       let columns = []
       for (; j % 4 != 0 && j - 1 < this.state.videos.length; j++) {
         columns.push(
-          <Grid.Column>
+          <Grid.Column key={Math.floor(Math.random() * 10000)} >
             <ReactPlayer
               url={this.state.videos[j - 1].data_url}
               //playing
@@ -99,23 +100,21 @@ export default class MediaPopup extends React.Component<IProps> {
           </Grid.Column>
         )
       }
-      rows.push(<Grid.Row>{columns}</Grid.Row>)
+      rows.push(<Grid.Row key={Math.floor(Math.random() * 10000)} >{columns}</Grid.Row>)
     }
     //change 2 to change column number
-    let grid = (<Grid columns={2} divided>
+    return (<Grid columns={2} divided>
       {rows}
     </Grid>)
-    this.setState({ videoGrid: grid })
   }
-
-
+  
   render() {
     const panes = [
-      { menuItem: 'Images', render:() => <Tab.Pane>{this.state.imageGrid}</Tab.Pane> },//if renderActiveOnly prop is false then use pane if not use render fucntion and provide components as function
-      { menuItem: 'Videos', render: () =><Tab.Pane>{this.state.videoGrid}</Tab.Pane> },
+      { menuItem: 'Images', render: () => <Tab.Pane attached={false} >{this.renderImageTab()}</Tab.Pane> },//if renderActiveOnly prop is false then use pane if not use render fucntion and provide components as function
+      { menuItem: 'Videos', render: () => <Tab.Pane attached={false} >{this.renderVideoTab()}</Tab.Pane> },
     ]
     return (
-      <Popup open={this.props.openModal} modal>
+      <Popup onClose={() => {this.props.setModal(false)}} open={this.props.openModal} modal>
 
         <div className="modal">
           <a className="close" onClick={() => { this.props.setModal(false); }}>
@@ -123,7 +122,7 @@ export default class MediaPopup extends React.Component<IProps> {
         </a>
           <div className="header"> Available Medias </div>
           <div className="content" style={{ height: 400 }} >
-            <Tab panes={panes} renderActiveOnly={true} />
+          <Tab menu={{ pointing: true }} panes={panes}  renderActiveOnly={true} />
           </div>
           <div className="actions">
             <button
