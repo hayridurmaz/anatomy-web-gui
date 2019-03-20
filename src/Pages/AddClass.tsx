@@ -19,7 +19,7 @@ class AddClass extends React.Component<IProps & ReduxProps> {
     yazar: "Öğrenci Konseyi",
     newsArray: [],
     selectedDuyuruTipi: "duyuru",
-    imgUrl: "",
+    imgUrl: "" ,
     isUploading: false,
     progress: 0
   };
