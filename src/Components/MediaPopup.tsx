@@ -48,7 +48,7 @@ export default class MediaPopup extends React.Component<IProps> {
   }
 
   setChosenMediaIndex = (index : number) => {
-    this.setState({chosenMedia: index}, () => {console.log(this.state.chosenMedia)})
+    this.setState({chosenMedia: index}, () => {console.log( "upper cmp"  + this.state.chosenMedia)})
   }
 
   renderImageTab = () => {
@@ -65,8 +65,7 @@ export default class MediaPopup extends React.Component<IProps> {
               media={this.state.images[j - 1]}
               index={j}
               setChosenMediaIndex={this.setChosenMediaIndex}
-              isChosen={this.state.chosenMedia === j}
-              dummyProp={this.state.chosenMedia}
+              isChosen={this.state.chosenMedia}
             />
           </Grid.Column>
         )

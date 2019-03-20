@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as types from "../store/types";
 import AnswerInput from "./AnswerInput";
-import { Input, Dropdown, Button, Label, Grid, Segment, Image } from 'semantic-ui-react'
+import { Input, Dropdown, Button, Label, Grid, Segment, Image, Item } from 'semantic-ui-react'
 import Popup from 'reactjs-popup'
 import MediaPopup from "./MediaPopup"
 
@@ -10,6 +10,8 @@ interface IProps {
   index: number;
   topics: any[];
   media: types.Media[];
+  sendData: boolean;
+  getData: (question: types.Question) => any;
 }
 
 export default class QuestionInput extends React.Component<IProps> {
@@ -22,13 +24,32 @@ export default class QuestionInput extends React.Component<IProps> {
     AnswerCount: 0,
     correctAnswerIndex: -100 as Number,
     openModal: false as boolean,
+    answers: [] as types.Answer[],
+    sendData: false as boolean,
   };
-  componentWillReceiveProps(nextProps: IProps) {
 
+  componentWillReceiveProps(nextProps: IProps) {
+    if (nextProps.sendData) {
+      this.setState({ sendData: true }, () => {
+        if(!this.state.sendData){
+          let que = {} as types.Question
+          que.qtext = this.state.questionText
+          que.hint = this.state.hint
+          que.media_id = this.state.mediaId
+          que.topic_id = this.state.topicId
+          que.answers = this.state.answers
+          que.id = this.props.index
+          this.props.getData(que)
+        }      
+      })
+
+
+
+    }
   }
 
   componentWillMount = () => {
-    console.log(this.props.topics)
+    //console.log(this.props.topics)
   }
   handleTopic = (value) => {
     this.setState({ topicId: value })
@@ -70,31 +91,53 @@ export default class QuestionInput extends React.Component<IProps> {
 
   resetAnswers = (event) => {
     event.preventDefault();
-    this.setState({ correctAnswerIndex: -100, AnswerCount: 0 })
+    this.setState({ correctAnswerIndex: -100, AnswerCount: 0, answers: [] })
   }
 
   renderAnswers = () => {
     let items = []
     for (let i = 0; i < this.state.AnswerCount; i++) {
-      console.log(i)
+      //console.log(i)
       items.push(
         <AnswerInput
           index={i}
           isCorrect={this.state.correctAnswerIndex === i}
           setCorrectAnswerIndex={this.setCorrectAnswerIndex}
           controlVar={this.state.correctAnswerIndex}
+          sendData={this.state.sendData}
+          getData={this.getData}
         />
       )
     }
     return items
   }
 
+  sendData = () => {
+    event.preventDefault()
+    this.setState({ sendData: true })
+  }
+
+  getData = (answer: types.Answer) => {
+    let exist = false
+    this.state.answers.forEach((Item) => {
+      if (Item.id === answer.id) {
+        exist = true
+      }
+    })
+    //if (!exist) {
+    var Answers = []
+    Answers.push(answer)
+    this.setState({ answers: Answers, sendData: false })
+    console.log(this.state.answers)
+    //}
+  }
+
   setCorrectAnswerIndex = (index: Number): any => {
-    console.log(index)
+    //console.log(index)
     this.setState({ correctAnswerIndex: index })
   }
 
-  setModal = (control : boolean) => {
+  setModal = (control: boolean) => {
     event.preventDefault()
     this.setState({ openModal: control })
   }
@@ -149,7 +192,8 @@ export default class QuestionInput extends React.Component<IProps> {
             <span style={{ marginRight: 39 }} >
               Add Media:
             </span>
-            <Button size='small' onClick={() => {this.setModal(true)}} > Add Media </Button>
+            <Button size='small' onClick={() => { this.setModal(true) }} > Add Media </Button>
+            <Button size='small' onClick={() => { this.sendData() }}> Send Data </Button>
           </Label>
         </div>
         <div style={{ flex: 1, margin: 10 }}>

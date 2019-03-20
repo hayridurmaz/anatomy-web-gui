@@ -1,11 +1,14 @@
 import * as React from "react";
 import { Input, Dropdown, Button, Label, Grid, Segment, Image } from 'semantic-ui-react'
+import * as types from "../store/types";
 
 interface IProps {
   index: Number;
   isCorrect: Boolean;
   setCorrectAnswerIndex: (index : Number) => any;
   controlVar: Number;
+  sendData: boolean;
+  getData: (ans : types.Answer) => any;
 }
 
 export default class AnswerInput extends React.Component<IProps> {
@@ -14,7 +17,7 @@ export default class AnswerInput extends React.Component<IProps> {
     atext: "" as String,
     question_id: -1 as Number,
     correct: false as Boolean,
-    inputColor: "transparent",
+    inputColor: "",
     inputIcon: "checkmark",
     inputContent: "Correct"
   };
@@ -24,6 +27,13 @@ export default class AnswerInput extends React.Component<IProps> {
       this.setState({inputColor: "green", inputIcon: "checkmark", inputContent: "Correct", correct: true})
     }else if (!newProp.isCorrect && newProp.controlVar != -100 ){
       this.setState({inputColor: "red", inputIcon: "close", inputContent: "Not Correct", correct: false})
+    }
+    if(newProp.sendData){
+      let ans  = {} as types.Answer 
+      ans.atext = this.state.atext
+      ans.correct = this.state.correct
+      ans.id = this.props.index
+      this.props.getData(ans)
     }
   }
 

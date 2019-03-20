@@ -33,7 +33,11 @@ class AddQuiz extends React.Component<IProps & ReduxProps> {
     QuestionCount: 0,
     title: "",
 
+    questions: [] as types.Question[],
+    sendData: false as boolean,
+
   };
+  i = 0
   questionElements = [];
   handleSubmit = event => {
     if (this.state.title === "") {
@@ -146,7 +150,67 @@ class AddQuiz extends React.Component<IProps & ReduxProps> {
 
   resetQuestions = (event) => {
     event.preventDefault();
-    this.setState({ QuestionCount: 0 })
+    this.setState({ QuestionCount: 0, questions: [] })
+  }
+
+  sendData = () => {
+    event.preventDefault()
+    this.setState({ sendData: true })
+  }
+
+  getData = (question: types.Question) => {
+    let exist = false
+    this.state.questions.forEach((item) => {
+      if (item.id === question.id) {
+        exist = true
+      }
+    })
+    //if (!exist) {
+      var Questions = this.state.questions
+      Questions.push(question)
+      this.setState({ questions: Questions, sendData: false }, () => { this.sendFormm() })
+    //}
+  }
+
+  sendFormm = () => {
+    console.log(this.state.questions)
+
+  }
+
+  sendForm = () => {
+    if (this.state.questions.length === 0) {
+      alert("Please enter valid questions for quiz")
+    }
+    this.state.questions.forEach((question: types.Question) => {
+      if (question.answers.length === 0) {
+        alert("Plase enter valid answers for questions.")
+
+      } else {
+        var answerControl = false as boolean
+        question.answers.forEach((answer) => {
+          if (answer.atext === "") {
+            alert("Please enter valid texts for answers")
+          } else if (answer.correct) {
+            answerControl = true
+          }
+        })
+        if (!answerControl) {
+          alert("Please choose an answer as true")
+        }
+      }
+      if (question.qtext === "") {
+        alert("Please enter valid texts for questions")
+      } else
+        if (question.hint === "") {
+          alert("Please enter a valid hint for questions")
+        } else
+          /* if(question.topic_id === -1){
+             alert("Please choose a topic for questions")
+           }else*/
+          if (question.media_id === -1) {
+            alert("Please choose a media for questions")
+          }
+    })
   }
 
   renderQuestions = () => {
@@ -159,6 +223,8 @@ class AddQuiz extends React.Component<IProps & ReduxProps> {
             index={i}
             topics={this.state.topicOptions}
             media={this.state.media}
+            sendData={this.state.sendData}
+            getData={this.getData}
           />
         </Segment>
       )
@@ -223,6 +289,7 @@ class AddQuiz extends React.Component<IProps & ReduxProps> {
                       </div>
                     }
                   />
+                  <Button size='small' onClick={() => { this.sendData() }}> Send Data </Button>
                 </Label>
               </div>
               <div style={{ flex: 1, margin: 10 }}>

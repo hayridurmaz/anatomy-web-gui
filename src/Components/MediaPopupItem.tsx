@@ -9,9 +9,8 @@ import ReactPlayer from "react-player";
 interface IProps {
   media: types.Media;
   index: Number;
-  isChosen: boolean;
+  isChosen: number;
   setChosenMediaIndex: (index: Number) => any;
-  dummyProp: Number;
 }
 
 export default class MediaPopupItem extends React.Component<IProps> {
@@ -27,11 +26,7 @@ export default class MediaPopupItem extends React.Component<IProps> {
   componentWillReceiveProps = (nextProps: IProps) => {
     console.log("hellooo")
     console.log(nextProps.isChosen)
-    if (nextProps.isChosen) {
-      this.setState({ buttonText: "chosen", isChosen: true })
-    } else {
-      this.setState({ buttonText: "Choose", isChosen: false })
-    }
+    
   }
 
   componentWillMount = () => {
@@ -42,10 +37,20 @@ export default class MediaPopupItem extends React.Component<IProps> {
 
   }
 
+  setStyleForButton = () => {
+    if (this.props.isChosen === this.props.index) {
+      this.setState({ buttonText: "chosen", isChosen: true })
+    } else {
+      this.setState({ buttonText: "Choose", isChosen: false })
+    }
+  }
+
   clickButton = () => {
     event.preventDefault()
-    console.log(this.props.index)
     this.props.setChosenMediaIndex(this.props.index)
+
+    console.log( "index" + this.props.index)
+    console.log("chosenMedia" + this.props.isChosen)
   }
 
   render() {
@@ -80,7 +85,7 @@ export default class MediaPopupItem extends React.Component<IProps> {
           />
         </div>
         <div>
-          <Button positive={this.state.isChosen} onClick={() => { this.clickButton() }} >{this.state.buttonText}</Button>
+          <Button  style={{marginTop: 20}} positive={this.props.isChosen === this.props.index} onClick={() => { this.clickButton() }} >{this.state.buttonText}</Button>
         </div>
       </div>
     );

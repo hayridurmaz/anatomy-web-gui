@@ -19,23 +19,24 @@ export interface Survey {
 }
 
 export interface Answer {
-  id: Number;
+  id?: Number;
   atext: String;
-  question_id: Number;
+  question_id?: Number;
   correct: Boolean;
 }
 
 export interface Question {
-  id: Number;
+  id?: Number;
   hint: String;
   qtext: String;
-  quiz_id: Number;
+  quiz_id?: Number;
   media_id: Number;
   topic_id: Number;
+  answers: Answer[];
 }
 
 export interface Quiz {
-  id: Number;
+  id?: Number;
   quiz_type_id: Number;
   system_id: Number;
   header: String;
