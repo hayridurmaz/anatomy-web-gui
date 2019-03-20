@@ -34,8 +34,6 @@ class AddQuiz extends React.Component<IProps & ReduxProps> {
     title: "",
 
     questions: [] as types.Question[],
-    sendData: false as boolean,
-
   };
   i = 0
   questionElements = [];
@@ -80,7 +78,7 @@ class AddQuiz extends React.Component<IProps & ReduxProps> {
         let topicsForDropdown: DropdownInterface[] = []
         topics.map((topic, id) => {
           var element = {} as DropdownInterface
-          element.key = topic.name
+          element.key = String(topic.id)
           element.value = topic.id
           element.text = topic.name
           topicsForDropdown.push(element)
@@ -96,7 +94,7 @@ class AddQuiz extends React.Component<IProps & ReduxProps> {
         let systemsForDropdown: DropdownInterface[] = []
         systems.map((system, id) => {
           var element = {} as DropdownInterface
-          element.key = system.name
+          element.key = String(system.id)
           element.value = system.id
           element.text = system.name
           systemsForDropdown.push(element)
@@ -155,21 +153,25 @@ class AddQuiz extends React.Component<IProps & ReduxProps> {
 
   sendData = () => {
     event.preventDefault()
-    this.setState({ sendData: true })
   }
 
   getData = (question: types.Question) => {
     let exist = false
-    this.state.questions.forEach((item) => {
+    var ques : types.Question[] = this.state.questions
+    ques.forEach((item) => {
       if (item.id === question.id) {
         exist = true
+        item.answers = question.answers
+        item.hint = question.hint
+        item.media_id = question.media_id
+        item.qtext = question.qtext
+        item.topic_id = question.topic_id
       }
     })
-    //if (!exist) {
-      var Questions = this.state.questions
-      Questions.push(question)
-      this.setState({ questions: Questions, sendData: false }, () => { this.sendFormm() })
-    //}
+    if (!exist) {
+      ques.push(question)
+    }
+    this.setState({ questions: ques}, () => { this.sendFormm() })
   }
 
   sendFormm = () => {
@@ -217,13 +219,12 @@ class AddQuiz extends React.Component<IProps & ReduxProps> {
     let items = []
     for (let i = 0; i < this.state.QuestionCount; i++) {
       items.push(
-        <Segment padded>
+        <Segment key={i} padded>
           <Label attached='top left'>Question {i + 1}</Label>
           <QuestionInput
             index={i}
             topics={this.state.topicOptions}
             media={this.state.media}
-            sendData={this.state.sendData}
             getData={this.getData}
           />
         </Segment>
@@ -260,6 +261,7 @@ class AddQuiz extends React.Component<IProps & ReduxProps> {
                 <Label>
                   Choose System:
                   <Dropdown
+                    
                     placeholder='System'
                     selection
                     style={{ marginLeft: 20 }}
@@ -283,9 +285,9 @@ class AddQuiz extends React.Component<IProps & ReduxProps> {
                     placeholder='Header'
                     action={
                       <div>
-                        <Button basic class="ui button" onClick={(event) => { this.decrementQuestionNumber(event) }} color='red' id="but" content='' icon="minus" style={{ margin: 0, marginLeft: 2, borderRadius: 2, fontWeight: "bold", fontSize: 11.5, width: 43 }} />
-                        <Button basic class="ui button" onClick={(event) => { this.incrementQuestionNumber(event) }} color='green' id="but" content='' icon="plus" style={{ margin: 0, marginLeft: 2, borderRadius: 2, fontWeight: "bold", fontSize: 11.5, width: 43 }} />
-                        <Button basic class="ui button" onClick={(event) => { this.resetQuestions(event) }} color='orange' id="but3" content='' icon="repeat" style={{ margin: 0, marginLeft: 2, borderRadius: 2, fontWeight: "bold", fontSize: 11.5, width: 43 }} />
+                        <Button basic className="ui button" onClick={(event) => { this.decrementQuestionNumber(event) }} color='red' id="but" content='' icon="minus" style={{ margin: 0, marginLeft: 2, borderRadius: 2, fontWeight: "bold", fontSize: 11.5, width: 43 }} />
+                        <Button basic className="ui button" onClick={(event) => { this.incrementQuestionNumber(event) }} color='green' id="but" content='' icon="plus" style={{ margin: 0, marginLeft: 2, borderRadius: 2, fontWeight: "bold", fontSize: 11.5, width: 43 }} />
+                        <Button basic className="ui button" onClick={(event) => { this.resetQuestions(event) }} color='orange' id="but3" content='' icon="repeat" style={{ margin: 0, marginLeft: 2, borderRadius: 2, fontWeight: "bold", fontSize: 11.5, width: 43 }} />
                       </div>
                     }
                   />
