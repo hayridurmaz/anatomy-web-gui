@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 // import Home from "./Home";
 // import About from "./About";
 
-interface IProps {}
+interface IProps { }
 interface ReduxProps {
   isLoggedIn?: boolean;
 }
@@ -37,6 +37,9 @@ class Navigation extends React.Component<IProps & ReduxProps> {
               </Link>
               <Link to={"/videos"}>
                 <p className={"white-text"}>Add Video</p>
+              </Link>
+              <Link to={"/classes"}>
+                <p className={"white-text"}>Classes</p>
               </Link>
               <Link to={"/logout"}>
                 <p className={"white-text"}>Log Out</p>

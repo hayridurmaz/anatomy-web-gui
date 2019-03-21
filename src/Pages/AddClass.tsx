@@ -4,10 +4,11 @@ import { connect } from "react-redux";
 import { Redirect } from "react-router";
 import { Link } from "react-router-dom";
 import ToggleButton from "react-toggle-button";
-import { getDate } from "../utils/utils";
+import { getDate, SERVER_URL } from "../utils/utils";
+import Axios from "axios";
 var ProgressBar = require("react-progressbar").default;
 
-interface IProps {}
+interface IProps { }
 interface ReduxProps {
   isLoggedIn?: boolean;
 }
@@ -17,9 +18,9 @@ class AddClass extends React.Component<IProps & ReduxProps> {
     title: "",
     tarih: "",
     yazar: "Öğrenci Konseyi",
-    newsArray: [],
+    classesArray: [] as types.Quiz[],
     selectedDuyuruTipi: "duyuru",
-    imgUrl: "" ,
+    imgUrl: "",
     isUploading: false,
     progress: 0
   };
@@ -51,201 +52,51 @@ class AddClass extends React.Component<IProps & ReduxProps> {
   componentWillMount() {
     this.setState({ tarih: getDate() });
     //TODO: Get
+    this.getClasses();
   }
 
-  renderNews = () => {
-    if (this.state.newsArray.length <= 10) {
-      return this.state.newsArray.map((item, id) => {
-        return (
-          <div key={id} style={{ border: "10px black" }}>
-            <Link to={{ pathname: "/detailNews", state: { news: item } }}>
-              <h3 className={"white-text"}>{item["header"]}</h3>
-            </Link>
-            <p key={id}>
-              {"" + item["content"].substr(0, 30)}
-              ...
-            </p>
-            Gösterilsin mi:{" "}
-            <ToggleButton
-              value={item["valid"] || false}
-              onToggle={value => {}}
-            />
-            <hr />
-          </div>
-        );
-      });
-    } else {
-      let arr = this.state.newsArray.slice(
-        this.state.newsArray.length - 10,
-        this.state.newsArray.length
-      );
-      return arr.map((item, id) => {
-        return (
-          <div key={id}>
-            <Link to={{ pathname: "/detailNews", state: { news: item } }}>
-              <h3 className={"white-text"}>{item["header"]}</h3>
-            </Link>
-            <p key={id}>
-              {"" + item["content"].substr(0, 30)}
-              ...
-            </p>
-            Gösterilsin mi:{" "}
-            <ToggleButton
-              value={item["valid"] || false}
-              onToggle={value => {
-                item["valid"] = !value;
-              }}
-            />
-            <hr />
-          </div>
-        );
-      });
-    }
-  };
-  handleOptionChange = changeEvent => {
-    this.setState({
-      selectedDuyuruTipi: changeEvent.target.value
-    });
-  };
+  getClasses = () => {
+    Axios.get(SERVER_URL + '/Classes')
+      .then((response) => { return response.data }).then((classes: types.Class[]) => {
+        let topicsForDropdown: types.Class[] = []
+        classes.map((topic, id) => {
+          var element = topic as types.Class
 
-  handleUploadStart = () => this.setState({ isUploading: true, progress: 0 });
-  handleProgress = progress => this.setState({ progress });
-  handleUploadError = error => {
-    this.setState({ isUploading: false });
-    console.error(error);
-  };
-  handleUploadSuccess = filename => {
-    this.setState({ avatar: filename, progress: 100, isUploading: false });
-  };
+          topicsForDropdown.push(element)
+          console.log(topic)
+        })
+        //console.log(JSON.stringify(topicsForDropdown))
+        this.setState({ classesArray: topicsForDropdown })
+      })
+  }
 
-  render() {
-    let progressing;
-    if (this.state.isUploading || this.state.progress === 100) {
-      progressing = (
-        <div
-          style={{
-            width: 150,
-            borderStyle: "solid",
-            borderColor: "green"
-          }}
-        >
-          <ProgressBar completed={this.state.progress} />
+  renderClasses = () => {
+
+    return this.state.classesArray.map((item, id) => {
+      return (
+        <div key={id} style={{ border: "10px black" }}>
+          <Link to={{ pathname: "/detailClasses", state: { classes: item } }}>
+            <h3 className={"white-text"}>{item["name"]}</h3>
+          </Link>
+          <hr />
         </div>
       );
-    } else {
-      progressing = <div />;
-    }
+    });
+
+  };
+
+
+
+
+  render() {
     if (this.props.isLoggedIn) {
       return (
         <div className={"container"}>
-          <h1 className={"teal-text"}> Haber ekle</h1>
-          <div className={"card-pannel z-depth-5 teal"}>
-            <form onSubmit={this.handleSubmit}>
-              <div style={{ flex: 1, margin: 10 }}>
-                <label>
-                  Başlık:
-                  <input
-                    value={this.state.title}
-                    style={{ marginLeft: 20 }}
-                    onChange={e => {
-                      this.setState({ title: e.target.value });
-                    }}
-                  />
-                </label>
-              </div>
-
-              <label>
-                <div style={{ flex: 1, margin: 10 }}>
-                  <p> Haber:</p>
-                  <textarea
-                    value={this.state.news}
-                    style={{ height: 300, width: 900 }}
-                    onChange={e => {
-                      this.setState({ news: e.target.value });
-                    }}
-                  />
-                </div>
-              </label>
-              <div style={{ flex: 1, margin: 10 }}>
-                <label>
-                  Tarih:
-                  <input value={this.state.tarih} style={{ marginLeft: 20 }} />
-                </label>
-              </div>
-              <div style={{ flex: 1, margin: 10 }}>
-                <label>
-                  Yazar:
-                  <input
-                    value={this.state.yazar}
-                    contentEditable={true}
-                    style={{ marginLeft: 20 }}
-                  />
-                </label>
-              </div>
-
-              <div style={{ flex: 1, margin: 10 }}>
-                <label>
-                  Resim:
-                  {/* <FileUploader
-                    accept="image/*"
-                    name="avatar"
-                    randomizeFilename
-                    storageRef={firebase.storage().ref("images")}
-                    onUploadStart={this.handleUploadStart}
-                    onUploadError={this.handleUploadError}
-                    onUploadSuccess={this.handleUploadSuccess}
-                    onProgress={this.handleProgress}
-                  /> */}
-                  {progressing}
-                </label>
-              </div>
-
-              <div style={{ flex: 1, margin: 10 }}>
-                <label>
-                  Haber tipi:
-                  <div className="radio">
-                    <label>
-                      <input
-                        type="radio"
-                        value="duyuru"
-                        checked={this.state.selectedDuyuruTipi === "duyuru"}
-                        onChange={this.handleOptionChange}
-                      />
-                      Duyuru
-                    </label>
-                  </div>
-                  <div className="radio">
-                    <label>
-                      <input
-                        type="radio"
-                        value="etkinlik"
-                        checked={this.state.selectedDuyuruTipi === "etkinlik"}
-                        onChange={this.handleOptionChange}
-                      />
-                      Etkinlik
-                    </label>
-                  </div>
-                  <div className="radio">
-                    <label>
-                      <input
-                        type="radio"
-                        value="haber"
-                        checked={this.state.selectedDuyuruTipi === "haber"}
-                        onChange={this.handleOptionChange}
-                      />
-                      Haber
-                    </label>
-                  </div>
-                </label>
-              </div>
-              <input type="submit" value="Submit" />
-            </form>
-          </div>
-          <h1 className={"teal-text"}> Haberler</h1>
-          {this.renderNews()}
-        </div>
-      );
-    } else {
+          <h1>Classes</h1>
+          {this.renderClasses()}
+        </div>)
+    }
+    else {
       return <Redirect to="/login" />;
     }
   }

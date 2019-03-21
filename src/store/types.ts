@@ -40,9 +40,17 @@ export interface Quiz {
   quiz_type_id: Number;
   system_id: Number;
   header: String;
+  questions?: [],
+  quiztype?: QuizType,
+  system?: System
 }
 
-export enum mediaTypes {Image, Video}
+export interface QuizType {
+  id: number,
+  name: string
+}
+
+export enum mediaTypes { Image, Video }
 
 export interface Topic {
   id: number,
@@ -54,7 +62,7 @@ export interface System {
   name: string
 }
 
-export interface Media{
+export interface Media {
   id: number,
   data_url: string,
   mediaType: mediaTypes,
@@ -65,3 +73,24 @@ export interface Media{
   topics?: Topic[],
   system?: System
 }
+
+
+export interface Class {
+  name: string,
+  students: Student[],
+  teachers: Teacher[],
+  quizzes: Quiz[],
+  id: number
+}
+
+export interface Teacher {
+  id: number,
+  username: string
+}
+
+export interface Student {
+  id: number,
+  username: string
+}
+
+

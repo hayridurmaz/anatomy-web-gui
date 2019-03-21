@@ -5,3 +5,4 @@ export function getDate() {
   var yyyy = today.getFullYear();
   return dd + "/" + mm + "/" + yyyy;
 }
+export var SERVER_URL = "http://localhost:8080"
