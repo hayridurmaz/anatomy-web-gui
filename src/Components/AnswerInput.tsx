@@ -5,7 +5,7 @@ import * as types from "../store/types";
 interface IProps {
   index: Number;
   isCorrect: Boolean;
-  setCorrectAnswerIndex: (index: Number) => any;
+  setCorrectAnswerIndex: (index: Number, fun : () => any) => any;
   controlVar: Number;
   getData: (ans: types.Answer) => any;
 }
@@ -24,7 +24,6 @@ export default class AnswerInput extends React.Component<IProps> {
   componentWillReceiveProps(newProp: IProps) {
 
     if (newProp.isCorrect && newProp.controlVar != -100) {
-      console.log("hello")
       this.setState({ inputColor: "green", inputIcon: "checkmark", inputContent: "Correct", correct: true })
     } else if (!newProp.isCorrect && newProp.controlVar != -100) {
       this.setState({ inputColor: "red", inputIcon: "close", inputContent: "Not Correct", correct: false })
@@ -38,11 +37,9 @@ export default class AnswerInput extends React.Component<IProps> {
     }*/
   }
 
-
   MakeCorrect = () => {
     event.preventDefault()
-    this.props.setCorrectAnswerIndex(this.props.index)
-    //this.sendDataParent()
+    this.props.setCorrectAnswerIndex(this.props.index, this.sendDataParent)
   }
 
   setText = (text: string) => {
@@ -55,7 +52,7 @@ export default class AnswerInput extends React.Component<IProps> {
     let ans = {} as types.Answer
     ans.atext = this.state.atext
     ans.correct = this.state.correct // there may be delay between setting correct var and sending the index to parent !!!!!!!
-    ans.id = this.props.index
+    ans.index = this.props.index
     this.props.getData(ans)
   }
 

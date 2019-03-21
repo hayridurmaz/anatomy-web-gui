@@ -19,6 +19,7 @@ export interface Survey {
 }
 
 export interface Answer {
+  index?: Number;
   id?: Number;
   atext: String;
   question_id?: Number;
@@ -26,6 +27,7 @@ export interface Answer {
 }
 
 export interface Question {
+  index?: Number;
   id?: Number;
   hint: String;
   qtext: String;

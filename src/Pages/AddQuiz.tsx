@@ -158,8 +158,8 @@ class AddQuiz extends React.Component<IProps & ReduxProps> {
   getData = (question: types.Question) => {
     let exist = false
     var ques : types.Question[] = this.state.questions
-    ques.forEach((item) => {
-      if (item.id === question.id) {
+    ques.forEach((item, id) => {
+      if (id === question.index) {
         exist = true
         item.answers = question.answers
         item.hint = question.hint
