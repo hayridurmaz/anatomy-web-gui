@@ -42,7 +42,7 @@ export default class MediaPopupItem extends React.Component<IProps> {
 
   clickButton = () => {
     event.preventDefault()
-    this.props.setChosenMediaIndex(this.props.index)
+    this.props.setChosenMediaIndex(this.props.media.id)
   }
 
   render() {

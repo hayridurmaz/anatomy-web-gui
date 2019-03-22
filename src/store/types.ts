@@ -42,6 +42,8 @@ export interface Quiz {
   quiz_type_id: Number;
   system_id: Number;
   header: String;
+  questions: Question[];
+
 }
 
 export enum mediaTypes {Image, Video}
@@ -57,6 +59,7 @@ export interface System {
 }
 
 export interface Media{
+  index: number,
   id: number,
   data_url: string,
   mediaType: mediaTypes,

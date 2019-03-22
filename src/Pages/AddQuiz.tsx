@@ -38,21 +38,45 @@ class AddQuiz extends React.Component<IProps & ReduxProps> {
   i = 0
   questionElements = [];
   handleSubmit = event => {
-    if (this.state.title === "") {
-      alert("Lütfen boş alan bırakmayınız");
-      event.preventDefault();
-      return;
-    }
-    if (window.confirm("Quizi göndermek istediğine emin misin?")) {
-      let sur = this.state.survey as any;
-      sur.name = this.state.title;
-      sur.valid = true;
-      sur.voters = [];
-      //TODO: Send the quiz onto webservice.
-      this.setState({ title: "", isSent: true });
-      setTimeout(() => {
-        this.setState({ isSent: false });
-      }, 1500);
+
+    let quiz = this.setQuiz()
+    if (window.confirm("Are you sure you want to add the quiz?")) {
+      Axios.post("http://localhost:8080/Quizzes", {
+        quiz_type_id: quiz.quiz_type_id,
+        system_id: quiz.system_id,
+        header: quiz.header,
+      }).then((quizResponse : any) => {
+        quiz.questions.forEach((question) => {
+          Axios.post("http://localhost:8080/Questions", {
+            media_id: question.media_id,
+            topic_id: question.topic_id,
+            quiz_id: quizResponse.data.id,
+            qtext: question.qtext,
+            hint: question.hint,
+          }).then((questionResponse : any) => {
+            console.log(questionResponse)
+            question.answers.forEach((answer) => {
+              Axios.post("http://localhost:8080/Answers", {
+                question_id: questionResponse.data.id,
+                atext: answer.atext
+              }).then((answerResponseAns : any) => {
+                if (answer.correct) {
+                  Axios.post("http://localhost:8080/CorrectAnswers", {
+                    question_id: questionResponse.data.id,
+                    answer_id: answerResponseAns.data.id
+                  }).then(response => {
+
+                  });
+                }
+              });
+            })
+
+          });
+        })
+
+
+      });
+      //this.setState({ title: "", });
     }
     event.preventDefault();
   };
@@ -157,7 +181,7 @@ class AddQuiz extends React.Component<IProps & ReduxProps> {
 
   getData = (question: types.Question) => {
     let exist = false
-    var ques : types.Question[] = this.state.questions
+    var ques: types.Question[] = this.state.questions
     ques.forEach((item, id) => {
       if (id === question.index) {
         exist = true
@@ -171,12 +195,17 @@ class AddQuiz extends React.Component<IProps & ReduxProps> {
     if (!exist) {
       ques.push(question)
     }
-    this.setState({ questions: ques}, () => { this.sendFormm() })
+    this.setState({ questions: ques }, () => { this.setQuiz() })
   }
 
-  sendFormm = () => {
-    console.log(this.state.questions)
-
+  setQuiz = () : types.Quiz => {
+    let quiz = {} as types.Quiz
+    quiz.header = this.state.title
+    quiz.system_id = this.state.chosenSystem
+    quiz.quiz_type_id = 36
+    quiz.questions = this.state.questions
+    console.log(quiz)
+    return quiz
   }
 
   sendForm = () => {
@@ -261,7 +290,7 @@ class AddQuiz extends React.Component<IProps & ReduxProps> {
                 <Label>
                   Choose System:
                   <Dropdown
-                    
+
                     placeholder='System'
                     selection
                     style={{ marginLeft: 20 }}
