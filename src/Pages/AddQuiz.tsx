@@ -8,6 +8,7 @@ import ToggleButton from "react-toggle-button";
 import { Input, Dropdown, Button, Label, Grid, Segment, Image } from 'semantic-ui-react'
 import Axios from "axios";
 import QuestionInput from "../Components/QuestionInput";
+import { bool } from "prop-types";
 
 
 interface IProps { }
@@ -37,15 +38,19 @@ class AddQuiz extends React.Component<IProps & ReduxProps> {
   };
   i = 0
   questionElements = [];
+
   handleSubmit = event => {
 
     let quiz = this.setQuiz()
+    if(!this.sendForm()){
+      console.log("not sent")
+    }else
     if (window.confirm("Are you sure you want to add the quiz?")) {
       Axios.post("http://localhost:8080/Quizzes", {
         quiz_type_id: quiz.quiz_type_id,
         system_id: quiz.system_id,
         header: quiz.header,
-      }).then((quizResponse : any) => {
+      }).then((quizResponse: any) => {
         quiz.questions.forEach((question) => {
           Axios.post("http://localhost:8080/Questions", {
             media_id: question.media_id,
@@ -53,13 +58,13 @@ class AddQuiz extends React.Component<IProps & ReduxProps> {
             quiz_id: quizResponse.data.id,
             qtext: question.qtext,
             hint: question.hint,
-          }).then((questionResponse : any) => {
+          }).then((questionResponse: any) => {
             console.log(questionResponse)
             question.answers.forEach((answer) => {
               Axios.post("http://localhost:8080/Answers", {
                 question_id: questionResponse.data.id,
                 atext: answer.atext
-              }).then((answerResponseAns : any) => {
+              }).then((answerResponseAns: any) => {
                 if (answer.correct) {
                   Axios.post("http://localhost:8080/CorrectAnswers", {
                     question_id: questionResponse.data.id,
@@ -198,50 +203,75 @@ class AddQuiz extends React.Component<IProps & ReduxProps> {
     this.setState({ questions: ques }, () => { this.setQuiz() })
   }
 
-  setQuiz = () : types.Quiz => {
+  setQuiz = (): types.Quiz => {
     let quiz = {} as types.Quiz
     quiz.header = this.state.title
     quiz.system_id = this.state.chosenSystem
     quiz.quiz_type_id = 36
     quiz.questions = this.state.questions
+
     console.log(quiz)
     return quiz
   }
 
-  sendForm = () => {
+  sendForm = (): boolean => {
+    if (this.state.title === "") {
+      alert("Please enter a title for the quiz")
+      return false
+    } else if (this.state.chosenSystem === -1) {
+      alert("Please choose a system for the quiz")
+      return false
+    }
     if (this.state.questions.length === 0) {
       alert("Please enter valid questions for quiz")
+      return false;
     }
-    this.state.questions.forEach((question: types.Question) => {
-      if (question.answers.length === 0) {
+    for(var i = 0; i < this.state.questions.length; i++){
+      if (this.state.questions[i].answers.length === 0) {
         alert("Plase enter valid answers for questions.")
-
-      } else {
-        var answerControl = false as boolean
-        question.answers.forEach((answer) => {
-          if (answer.atext === "") {
-            alert("Please enter valid texts for answers")
-          } else if (answer.correct) {
-            answerControl = true
-          }
-        })
-        if (!answerControl) {
-          alert("Please choose an answer as true")
+        return false
+      } else if (this.state.questions[i].answers.length != 0) {
+        if (this.state.questions[i].answers.length === 1) {
+          alert("Please enter more than one answer")
+          return false
         }
-      }
-      if (question.qtext === "") {
-        alert("Please enter valid texts for questions")
-      } else
-        if (question.hint === "") {
-          alert("Please enter a valid hint for questions")
-        } else
-          /* if(question.topic_id === -1){
-             alert("Please choose a topic for questions")
-           }else*/
-          if (question.media_id === -1) {
-            alert("Please choose a media for questions")
+        let answerControl1 = false
+        let answerControl2 = true
+        for(var j = 0; j < this.state.questions[i].answers.length; j++ ){
+          if (this.state.questions[i].answers[j].correct) {
+            answerControl1 = true
           }
-    })
+        }
+        for(var j = 0; j < this.state.questions[i].answers.length; j++ ){
+          if (this.state.questions[i].answers[j].atext === "") {
+            answerControl2 = false
+          }
+        }
+        if (!answerControl1) {
+          alert("Please choose one answer as true")
+          return false
+        }
+        if (!answerControl2) {
+          alert("Please enter valid texts for answers")
+          return false
+        }
+      } else if (this.state.questions[i].qtext === "") {
+        alert("Please enter valid texts for questions")
+        return false
+      } else if (this.state.questions[i].hint === "") {
+        alert("Please enter a valid hint for questions")
+        return false
+      } else if (this.state.questions[i].topic_id === -1) {
+        alert("Please choose a topic for questions")
+        return false
+      } else if (this.state.questions[i].media_id === -1) {
+        alert("Please choose a media for questions")
+        return false
+      }
+      return true
+    }
+    console.log("here")
+    return true
   }
 
   renderQuestions = () => {
