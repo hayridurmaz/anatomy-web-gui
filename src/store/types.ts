@@ -37,9 +37,9 @@ export interface Question {
 
 export interface Quiz {
   id?: Number;
-  quiz_type_id: Number;
-  system_id: Number;
-  header: String;
+  quiz_type_id?: Number;
+  system_id?: Number;
+  header?: String;
   questions?: [],
   quiztype?: QuizType,
   system?: System
