@@ -69,10 +69,14 @@ class ClassDetail extends React.Component<Iprops & ReduxProps> {
       .then((classes: types.Quiz[]) => {
         let quizzes: types.Quiz[] = [];
         let bools = [];
+        let quizIds = [];
+        alreadyAddedQuizzes.forEach(item => {
+          quizIds.push(item.id);
+        });
         classes.map((topic, id) => {
           var element = topic as types.Quiz;
 
-          if (!alreadyAddedQuizzes.includes(element)) {
+          if (!quizIds.includes(element.id)) {
             quizzes.push(element);
             bools.push(false);
           }
@@ -88,6 +92,24 @@ class ClassDetail extends React.Component<Iprops & ReduxProps> {
   };
 
   handleCloseQuiz = () => {
+    let class_obj = this.props.location.state.classes as types.Class;
+    let arr = [];
+    this.state.checkedQuizzes.forEach((element: boolean, index: number) => {
+      if (element) {
+        arr.push(this.state.quizzesArray[index].id);
+      }
+    });
+
+    if (arr.length !== 0) {
+      Axios.put(SERVER_URL + "/Classes/" + class_obj.id, {
+        quiz_ids: arr
+      }).then(Response => {
+        console.log(Response);
+      });
+    }
+
+    console.log(arr);
+
     this.setState({ dialogAddQuiz: false });
   };
 
