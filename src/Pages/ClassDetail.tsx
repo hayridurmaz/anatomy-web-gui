@@ -47,8 +47,21 @@ class ClassDetail extends React.Component<Iprops & ReduxProps> {
     teacherUsername: "",
     studentUsername: "",
     quizName: "",
-    checkedQuizzes: [] as boolean[]
+    checkedQuizzes: [] as boolean[],
+    class_obj: {} as types.Class
   };
+
+  componentWillMount() {
+    this.setState({
+      class_obj: this.props.location.state.classes as types.Class
+    });
+  }
+
+  componentWillReceiveProps(nextProps: Iprops) {
+    this.setState({
+      class_obj: nextProps.location.state.classes as types.Class
+    });
+  }
 
   handleClickOpenTeacher = () => {
     this.setState({ dialogAddTeacher: true });
@@ -59,8 +72,8 @@ class ClassDetail extends React.Component<Iprops & ReduxProps> {
   };
 
   handleClickOpenQuiz = () => {
-    let class_obj = this.props.location.state.classes as types.Class;
-    let alreadyAddedQuizzes = class_obj.quizzes;
+    // let class_obj = this.props.location.state.classes as types.Class;
+    let alreadyAddedQuizzes = this.state.class_obj.quizzes;
 
     Axios.get(SERVER_URL + "/Quizzes")
       .then(response => {
@@ -91,8 +104,8 @@ class ClassDetail extends React.Component<Iprops & ReduxProps> {
     //this.setState({ dialogAddQuiz: true });
   };
 
-  handleCloseQuiz = () => {
-    let class_obj = this.props.location.state.classes as types.Class;
+  handleAddQuiz = () => {
+    // let class_obj = this.props.location.state.classes as types.Class;
     let arr = [];
     this.state.checkedQuizzes.forEach((element: boolean, index: number) => {
       if (element) {
@@ -101,16 +114,28 @@ class ClassDetail extends React.Component<Iprops & ReduxProps> {
     });
 
     if (arr.length !== 0) {
-      Axios.put(SERVER_URL + "/Classes/" + class_obj.id, {
+      Axios.put(SERVER_URL + "/Classes/" + this.state.class_obj.id, {
         quiz_ids: arr
       }).then(Response => {
         console.log(Response);
+        this.setState({ dialogAddQuiz: false, class_obj: Response.data });
       });
     }
 
     console.log(arr);
+  };
 
+  handleCancelQuiz = () => {
     this.setState({ dialogAddQuiz: false });
+  };
+
+  handleDeleteQuiz = (quiz: types.Quiz) => {
+    Axios.put(SERVER_URL + "/Classes/" + this.state.class_obj.id, {
+      remove_quiz_ids: [quiz.id]
+    }).then(Response => {
+      console.log(Response);
+      this.setState({ class_obj: Response.data });
+    });
   };
 
   handleClickOpenStudent = () => {
@@ -139,27 +164,37 @@ class ClassDetail extends React.Component<Iprops & ReduxProps> {
   };
 
   renderQuizzes = () => {
-    let class_obj = this.props.location.state.classes as types.Class;
-    if (class_obj.quizzes.length === 0) {
+    //let class_obj = this.props.location.state.classes as types.Class;
+    if (this.state.class_obj.quizzes.length === 0) {
       return (
         <div>
           <p>There is no quiz found</p>
         </div>
       );
     } else {
-      return class_obj.quizzes.map((quiz: types.Quiz, index: number) => {
-        return (
-          <List.Item as="div" key={index}>
-            <List.Content>
-              <List.Header>
-                {" "}
-                <Icon name="question circle" />
-                {quiz.header}
-              </List.Header>
-            </List.Content>
-          </List.Item>
-        );
-      });
+      return this.state.class_obj.quizzes.map(
+        (quiz: types.Quiz, index: number) => {
+          return (
+            <List.Item as="div" key={index}>
+              <List.Content>
+                <List.Header>
+                  <Icon
+                    name="delete"
+                    inverted
+                    circular
+                    link
+                    onClick={() => {
+                      //this.props.deleteItem(this.props.item);
+                      this.handleDeleteQuiz(quiz);
+                    }}
+                  />{" "}
+                  {quiz.header + "                 "}
+                </List.Header>
+              </List.Content>
+            </List.Item>
+          );
+        }
+      );
     }
   };
 
@@ -167,15 +202,19 @@ class ClassDetail extends React.Component<Iprops & ReduxProps> {
     return (
       <Dialog
         open={this.state.dialogAddQuiz}
-        onClose={this.handleCloseQuiz}
+        onClose={this.handleCancelQuiz}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">{"Add quiz"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Please choose a quiz name.
+            {this.state.quizzesArray.length !== 0 &&
+              "Please choose a quiz name."}
+            {this.state.quizzesArray.length === 0 &&
+              "Could not found any quizzes"}
           </DialogContentText>
+
           <List>
             {this.state.quizzesArray.map((item, index) => {
               return (
@@ -197,10 +236,10 @@ class ClassDetail extends React.Component<Iprops & ReduxProps> {
           </List>
         </DialogContent>
         <DialogActions>
-          <Button onClick={this.handleCloseQuiz} color="red">
+          <Button onClick={this.handleCancelQuiz} color="red">
             Cancel
           </Button>
-          <Button onClick={this.handleCloseQuiz} color="green" autoFocus>
+          <Button onClick={this.handleAddQuiz} color="green" autoFocus>
             Add
           </Button>
         </DialogActions>
@@ -211,61 +250,65 @@ class ClassDetail extends React.Component<Iprops & ReduxProps> {
   addQuiz = () => {};
 
   renderTeachers = () => {
-    let class_obj = this.props.location.state.classes as types.Class;
-    if (class_obj.teachers.length === 0) {
+    // let class_obj = this.props.location.state.classes as types.Class;
+    if (this.state.class_obj.teachers.length === 0) {
       return (
         <div>
           <p>There is no teachers found</p>
         </div>
       );
     } else {
-      return class_obj.teachers.map((teacher: types.Teacher, index: number) => {
-        return (
-          <List.Item as="div" key={teacher.id}>
-            <List.Content>
-              <List.Header>
-                <Icon name="user circle" />
-                {teacher.username}
-              </List.Header>
-            </List.Content>
-          </List.Item>
-        );
-      });
+      return this.state.class_obj.teachers.map(
+        (teacher: types.Teacher, index: number) => {
+          return (
+            <List.Item as="div" key={teacher.id}>
+              <List.Content>
+                <List.Header>
+                  <Icon name="user circle" />
+                  {teacher.username}
+                </List.Header>
+              </List.Content>
+            </List.Item>
+          );
+        }
+      );
     }
   };
 
   renderStudents = () => {
-    let class_obj = this.props.location.state.classes as types.Class;
-    if (class_obj.students.length === 0) {
+    // let class_obj = this.props.location.state.classes as types.Class;
+    if (this.state.class_obj.students.length === 0) {
       return (
         <div>
           <p>There is no students found</p>
         </div>
       );
     } else {
-      return class_obj.students.map((student: types.Student, index: number) => {
-        return (
-          <List.Item as="div" key={student.id}>
-            <List.Content>
-              <List.Header>
-                {" "}
-                <Icon name="user circle" />
-                {student.username}
-              </List.Header>
-            </List.Content>
-          </List.Item>
-        );
-      });
+      return this.state.class_obj.students.map(
+        (student: types.Student, index: number) => {
+          return (
+            <List.Item as="div" key={student.id}>
+              <List.Content>
+                <List.Header>
+                  {" "}
+                  <Icon name="user circle" />
+                  {student.username}
+                </List.Header>
+              </List.Content>
+            </List.Item>
+          );
+        }
+      );
     }
   };
 
   render() {
-    let class_obj = this.props.location.state.classes as types.Class;
+    // let class_obj = this.props.location.state.classes as types.Class;
 
     if (this.props.isLoggedIn) {
       return (
         <div className={"container "}>
-          <h1>{class_obj.name}</h1>
+          <h1>{this.state.class_obj.name}</h1>
           <h2>
             Quizzes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <Button
