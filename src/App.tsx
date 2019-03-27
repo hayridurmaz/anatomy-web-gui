@@ -14,6 +14,8 @@ import * as firebase from "firebase";
 import AddSystem from "./Pages/AddSystem";
 import AddTopic from "./Pages/AddTopic";
 import AddVideo from "./Pages/AddVideo";
+import SeeQuizzes from "./Pages/SeeQuizzes";
+
 
 
 class App extends React.Component {
@@ -37,6 +39,7 @@ class App extends React.Component {
         {/**
          *  route to diffrent component
          */}
+        <Route exact={true} path={"/seeQuizzes"} component={SeeQuizzes} />
         <Route exact={true} path={"/quizzes"} component={AddQuiz} />
         <Route exact={true} path={"/images"} component={AddImage} />
         <Route exact={true} path={"/videos"} component={AddVideo} />

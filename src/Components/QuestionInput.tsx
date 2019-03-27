@@ -101,12 +101,14 @@ export default class QuestionInput extends React.Component<IProps> {
   getData = (answer: types.Answer) => {
     let exist = false
     let anss = this.state.answers
-    console.log(anss)
-    anss.forEach((Item) => {
-      if (Item.id === answer.id) {
+    anss.forEach((Item, id) => {
+      if (id === answer.index) {
         exist = true
         Item.atext = answer.atext
-        Item.correct = answer.correct
+        Item.correct = false
+      }
+      if(id === this.state.correctAnswerIndex){
+        Item.correct = true
       }
     })
     if (!exist) {
@@ -115,7 +117,6 @@ export default class QuestionInput extends React.Component<IProps> {
     this.setState({ answers: anss}, () => {
       this.sendDataParent()
     })
-    //console.log(this.state.answers)
   }
 
   sendDataParent = () => {
@@ -125,13 +126,13 @@ export default class QuestionInput extends React.Component<IProps> {
     que.media_id = this.state.mediaId
     que.topic_id = this.state.topicId
     que.answers = this.state.answers
-    que.id = this.props.index
+    que.index = this.props.index
     this.props.getData(que)
   }
 
-  setCorrectAnswerIndex = (index: Number): any => {
+  setCorrectAnswerIndex = (index: Number, fun : () =>{}): any => {
     //console.log(index)
-    this.setState({ correctAnswerIndex: index })
+    this.setState({ correctAnswerIndex: index }, fun)
   }
 
   setModal = (control: boolean) => {

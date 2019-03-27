@@ -19,6 +19,7 @@ export interface Survey {
 }
 
 export interface Answer {
+  index?: Number;
   id?: Number;
   atext: String;
   question_id?: Number;
@@ -26,6 +27,7 @@ export interface Answer {
 }
 
 export interface Question {
+  index?: Number;
   id?: Number;
   hint: String;
   qtext: String;
@@ -40,57 +42,58 @@ export interface Quiz {
   quiz_type_id?: Number;
   system_id?: Number;
   header?: String;
-  questions?: [],
-  quiztype?: QuizType,
-  system?: System
+  questions?: Question[];
+  quiztype?: QuizType;
+  system?: System;
 }
 
 export interface QuizType {
-  id: number,
-  name: string
+  id: number;
+  name: string;
 }
 
-export enum mediaTypes { Image, Video }
+export enum mediaTypes {
+  Image,
+  Video
+}
 
 export interface Topic {
-  id: number,
-  name: string
+  id: number;
+  name: string;
 }
 
 export interface System {
-  id: number,
-  name: string
+  id: number;
+  name: string;
 }
 
 export interface Media {
-  id: number,
-  data_url: string,
-  mediaType: mediaTypes,
-  system_id: number,
-  topic_ids: number[],
-  thumbnail_url: string,
-  date: string,
-  topics?: Topic[],
-  system?: System
+  index: number;
+  id: number;
+  data_url: string;
+  mediaType: mediaTypes;
+  system_id: number;
+  topic_ids: number[];
+  thumbnail_url: string;
+  date: string;
+  topics?: Topic[];
+  system?: System;
 }
 
-
 export interface Class {
-  name: string,
-  students: Student[],
-  teachers: Teacher[],
-  quizzes: Quiz[],
-  id: number
+  name: string;
+  students: Student[];
+  teachers: Teacher[];
+  quizzes: Quiz[];
+  id: number;
 }
 
 export interface Teacher {
-  id: number,
-  username: string
+  id: number;
+  username: string;
 }
 
 export interface Student {
-  id: number,
-  username: string
+  id: number;
+  username: string;
 }
-
-

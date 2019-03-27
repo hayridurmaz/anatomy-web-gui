@@ -42,7 +42,7 @@ export default class MediaPopupItem extends React.Component<IProps> {
 
   clickButton = () => {
     event.preventDefault()
-    this.props.setChosenMediaIndex(this.props.index)
+    this.props.setChosenMediaIndex(this.props.media.id)
   }
 
   render() {
@@ -59,7 +59,7 @@ export default class MediaPopupItem extends React.Component<IProps> {
               trigger={<Button onClick={() => { event.preventDefault(); }} icon>Topics</Button>}
               content={<Label.Group size='large' style={{ marginLeft: 0 }} >
                 {this.props.media.topics.map((topic) => {
-                  return (<Label>{topic.name}</Label>)
+                  return (<Label key={this.props.media.system.id} >{topic.name}</Label>)
                 })}
               </Label.Group>}
               on={['hover', 'click']}
@@ -71,7 +71,7 @@ export default class MediaPopupItem extends React.Component<IProps> {
             <PopupS
               trigger={<Button onClick={() => { event.preventDefault(); }} icon>System</Button>}
               content={<Label.Group size='large' style={{ marginLeft: 0 }} >
-                <Label>{this.props.media.system.name}</Label>
+                <Label key={this.props.media.system.id} >{this.props.media.system.name}</Label>
               </Label.Group>}
               on={['hover', 'click']}
               hideOnScroll

@@ -20,7 +20,7 @@ interface ReduxProps {
 //localhost
 var SERVER_URL = "http://localhost:8080"
 
-class AddQuiz extends React.Component<IProps & ReduxProps> {
+class SeeQuizzes extends React.Component<IProps & ReduxProps> {
   state = {
     survey: {},
     news: "",
@@ -35,6 +35,8 @@ class AddQuiz extends React.Component<IProps & ReduxProps> {
     title: "",
 
     questions: [] as types.Question[],
+
+    quizzes: [] as types.Quiz[]
   };
   i = 0
   questionElements = [];
@@ -87,11 +89,6 @@ class AddQuiz extends React.Component<IProps & ReduxProps> {
   };
 
   componentWillMount() {
-    //TODO: Get current quizzes
-    for (let index = 0; index < this.state.QuestionCount; index++) {
-      let el = <p>sorular</p>;
-      this.questionElements.push(el);
-    }
     this.getDataFromServer()
   }
 
@@ -101,7 +98,7 @@ class AddQuiz extends React.Component<IProps & ReduxProps> {
       value: number,
       text: string
     }
-    // stateOptions = [ { key: 'AL', value: 'AL', text: 'Alabama' }, ...  ]
+   /* // stateOptions = [ { key: 'AL', value: 'AL', text: 'Alabama' }, ...  ]
     Axios.get(SERVER_URL + '/Topics')
       .then((response) => { return response.data }).then((topics: types.Topic[]) => {
         let topicsForDropdown: DropdownInterface[] = []
@@ -136,8 +133,11 @@ class AddQuiz extends React.Component<IProps & ReduxProps> {
     Axios.get(SERVER_URL + '/Media')
       .then((response) => { return response.data }).then((allMedia: types.Media[]) => {
         this.setState({ media: allMedia, }, () => console.log(this.state.media))
+      })*/
+      Axios.get(SERVER_URL + '/Quizzes')
+      .then((response) => { return response.data }).then((allQuizzes: types.Quiz[]) => {
+        this.setState({ quizzes: allQuizzes, }, () => console.log(this.state.quizzes))
       })
-
   }
 
   handleSystem = (value) => {
@@ -380,4 +380,4 @@ const mapStateToProps = (state: types.GlobalState) => ({
   isLoggedIn: state.loggedIn
 });
 
-export default connect<{}, {}, ReduxProps>(mapStateToProps)(AddQuiz);
+export default connect<{}, {}, ReduxProps>(mapStateToProps)(SeeQuizzes);

@@ -64,7 +64,7 @@ export default class MediaPopup extends React.Component<IProps> {
           <Grid.Column key={Math.floor(Math.random() * 10000)} >
             <MediaPopupItem
               media={this.state.images[j - 1]}
-              index={j}
+              index={this.state.images[j - 1].id}
               setChosenMediaIndex={this.setChosenMediaIndex}
               isChosen={this.state.chosenMedia}
             />
