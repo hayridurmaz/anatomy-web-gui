@@ -74,7 +74,7 @@ class ClassDetail extends React.Component<Iprops & ReduxProps> {
   handleClickOpenQuiz = () => {
     // let class_obj = this.props.location.state.classes as types.Class;
     let alreadyAddedQuizzes = this.state.class_obj.quizzes;
-
+    this.setState({ dialogAddQuiz: true });
     Axios.get(SERVER_URL + "/Quizzes")
       .then(response => {
         return response.data;
@@ -83,8 +83,12 @@ class ClassDetail extends React.Component<Iprops & ReduxProps> {
         let quizzes: types.Quiz[] = [];
         let bools = [];
         let quizIds = [];
+        let quizNames = [];
         alreadyAddedQuizzes.forEach(item => {
           quizIds.push(item.id);
+        });
+        alreadyAddedQuizzes.forEach(item => {
+          quizNames.push(item.header);
         });
         classes.map((topic, id) => {
           var element = topic as types.Quiz;
@@ -95,11 +99,25 @@ class ClassDetail extends React.Component<Iprops & ReduxProps> {
           }
         });
         //console.log(JSON.stringify(topicsForDropdown))
-        this.setState({
-          quizzesArray: quizzes,
-          dialogAddQuiz: true,
-          checkedQuizzes: bools
-        });
+        if (this.state.quizName.length === 0) {
+          this.setState({
+            quizzesArray: quizzes,
+            checkedQuizzes: bools
+          });
+        } else {
+          let searchedArr = [];
+          let searchedArrBools = [];
+          quizzes.forEach(element => {
+            if (element.header.includes(this.state.quizName)) {
+              searchedArr.push(element);
+              searchedArrBools.push(false);
+            }
+          });
+          this.setState({
+            quizzesArray: searchedArr,
+            checkedQuizzes: searchedArrBools
+          });
+        }
       });
     //this.setState({ dialogAddQuiz: true });
   };
@@ -151,6 +169,10 @@ class ClassDetail extends React.Component<Iprops & ReduxProps> {
     this.setState({
       [name]: event.target.value
     });
+
+    if (name === "quizName") {
+      this.handleClickOpenQuiz();
+    }
   };
 
   handleChangeChecked = (index: number) => (
@@ -184,7 +206,6 @@ class ClassDetail extends React.Component<Iprops & ReduxProps> {
                     circular
                     link
                     onClick={() => {
-                      //this.props.deleteItem(this.props.item);
                       this.handleDeleteQuiz(quiz);
                     }}
                   />{" "}
@@ -209,8 +230,19 @@ class ClassDetail extends React.Component<Iprops & ReduxProps> {
         <DialogTitle id="alert-dialog-title">{"Add quiz"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            {this.state.quizzesArray.length !== 0 &&
-              "Please choose a quiz name."}
+            {
+              <React.Fragment>
+                Please choose a quiz name.
+                <TextField
+                  onChange={this.handleChange("quizName")}
+                  id="standard-with-placeholder"
+                  label="Quiz name"
+                  placeholder=""
+                  className={"textField"}
+                  margin="normal"
+                />
+              </React.Fragment>
+            }
             {this.state.quizzesArray.length === 0 &&
               "Could not found any quizzes"}
           </DialogContentText>
