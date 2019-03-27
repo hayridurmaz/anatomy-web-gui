@@ -17,6 +17,7 @@ import {
 import Axios from "axios";
 import QuestionInput from "../Components/QuestionInput";
 import { bool } from "prop-types";
+import { SERVER_URL } from "src/utils/utils";
 
 interface IProps {}
 interface ReduxProps {
@@ -25,7 +26,6 @@ interface ReduxProps {
 
 //188.166.49.57
 //localhost
-var SERVER_URL = "http://localhost:8080";
 
 class AddQuiz extends React.Component<IProps & ReduxProps> {
   state = {
@@ -51,13 +51,13 @@ class AddQuiz extends React.Component<IProps & ReduxProps> {
     if (!this.sendForm()) {
       console.log("not sent");
     } else if (window.confirm("Are you sure you want to add the quiz?")) {
-      Axios.post("http://localhost:8080/Quizzes", {
+      Axios.post(SERVER_URL + "/Quizzes", {
         quiz_type_id: quiz.quiz_type_id,
         system_id: quiz.system_id,
         header: quiz.header
       }).then((quizResponse: any) => {
         quiz.questions.forEach((question: types.Question) => {
-          Axios.post("http://localhost:8080/Questions", {
+          Axios.post(SERVER_URL + "/Questions", {
             media_id: question.media_id,
             topic_id: question.topic_id,
             quiz_id: quizResponse.data.id,
@@ -66,12 +66,12 @@ class AddQuiz extends React.Component<IProps & ReduxProps> {
           }).then((questionResponse: any) => {
             console.log(questionResponse);
             question.answers.forEach(answer => {
-              Axios.post("http://localhost:8080/Answers", {
+              Axios.post(SERVER_URL + "/Answers", {
                 question_id: questionResponse.data.id,
                 atext: answer.atext
               }).then((answerResponseAns: any) => {
                 if (answer.correct) {
-                  Axios.post("http://localhost:8080/CorrectAnswers", {
+                  Axios.post(SERVER_URL + "/CorrectAnswers", {
                     question_id: questionResponse.data.id,
                     answer_id: answerResponseAns.data.id
                   }).then(response => {});
