@@ -233,17 +233,20 @@ class ClassDetail extends React.Component<Iprops & ReduxProps> {
             {
               <React.Fragment>
                 Please choose a quiz name.
-                <TextField
-                  onChange={this.handleChange("quizName")}
-                  id="standard-with-placeholder"
-                  label="Quiz name"
-                  placeholder=""
-                  className={"textField"}
-                  margin="normal"
-                />
+                <div style={{ paddingLeft: 0 }}>
+                  <TextField
+                    onChange={this.handleChange("quizName")}
+                    id="standard-with-placeholder"
+                    label="Quiz name"
+                    placeholder=""
+                    className={"textField"}
+                    //margin="normal"
+                  />
+                </div>
               </React.Fragment>
             }
             {this.state.quizzesArray.length === 0 &&
+              // this.state.quizName.length === 0 &&
               "Could not found any quizzes"}
           </DialogContentText>
 
