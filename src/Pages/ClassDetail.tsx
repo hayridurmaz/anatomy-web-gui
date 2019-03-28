@@ -44,10 +44,14 @@ class ClassDetail extends React.Component<Iprops & ReduxProps> {
     dialogAddTeacher: false,
     dialogAddQuiz: false,
     quizzesArray: [] as types.Quiz[],
-    teacherUsername: "",
-    studentUsername: "",
+    teachersArray: [] as types.Teacher[],
+    studentsArray: [] as types.Student[],
     quizName: "",
+    studentName: "",
+    teacherName: "",
     checkedQuizzes: [] as boolean[],
+    checkedTeachers: [] as boolean[],
+    checkedStudents: [] as boolean[],
     class_obj: {} as types.Class
   };
 
@@ -64,11 +68,85 @@ class ClassDetail extends React.Component<Iprops & ReduxProps> {
   }
 
   handleClickOpenTeacher = () => {
+    let alreadyAddedTeachers = this.state.class_obj.teachers;
     this.setState({ dialogAddTeacher: true });
+    Axios.get(SERVER_URL + "/Teachers")
+      .then(response => {
+        return response.data;
+      })
+      .then((teachers: types.Teacher[]) => {
+        let teachersArr: types.Teacher[] = [];
+        let bools = [];
+        let teacherNames = [];
+
+        alreadyAddedTeachers.forEach(item => {
+          teacherNames.push(item.username);
+        });
+        teachers.map((topic, id) => {
+          var element = topic as types.Teacher;
+
+          if (!teacherNames.includes(element.username)) {
+            teachersArr.push(element);
+            bools.push(false);
+          }
+        });
+        if (this.state.teacherName.length === 0) {
+          this.setState({
+            teachersArray: teachersArr,
+            checkedTeachers: bools
+          });
+        } else {
+          let searchedArr = [];
+          let searchedArrBools = [];
+          teachersArr.forEach(element => {
+            if (element.username.includes(this.state.teacherName)) {
+              searchedArr.push(element);
+              searchedArrBools.push(false);
+            }
+          });
+          this.setState({
+            teachersArray: searchedArr,
+            checkedTeachers: searchedArrBools
+          });
+        }
+      });
   };
 
-  handleCloseTeacher = () => {
+  handleCancelTeacher = () => {
     this.setState({ dialogAddTeacher: false });
+  };
+
+  handleAddTeacher = () => {
+    let arr = [];
+    this.state.checkedTeachers.forEach((element: boolean, index: number) => {
+      if (element) {
+        arr.push(this.state.teachersArray[index].id);
+      }
+    });
+
+    if (arr.length !== 0) {
+      Axios.put(SERVER_URL + "/Classes/" + this.state.class_obj.id, {
+        teacher_ids: arr
+      })
+        .then(Response => {
+          console.log(Response);
+          this.setState({ dialogAddTeacher: false, class_obj: Response.data });
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
+
+    console.log(arr);
+  };
+
+  handleDeleteTeacher = (teacher: types.Teacher) => {
+    Axios.put(SERVER_URL + "/Classes/" + this.state.class_obj.id, {
+      remove_teacher_ids: [teacher.id]
+    }).then(Response => {
+      console.log(Response);
+      this.setState({ class_obj: Response.data });
+    });
   };
 
   handleClickOpenQuiz = () => {
@@ -166,16 +244,24 @@ class ClassDetail extends React.Component<Iprops & ReduxProps> {
   handleChange = (name: string) => (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    this.setState({
-      [name]: event.target.value
-    });
+    this.setState(
+      {
+        [name]: event.target.value
+      },
+      () => {
+        if (name === "quizName") {
+          this.handleClickOpenQuiz();
+        }
+        if (name === "teacherName") {
+          console.log(this.state.teacherName);
 
-    if (name === "quizName") {
-      this.handleClickOpenQuiz();
-    }
+          this.handleClickOpenTeacher();
+        }
+      }
+    );
   };
 
-  handleChangeChecked = (index: number) => (
+  handleChangeCheckedQuizzes = (index: number) => (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     let isQuizzesChecked = this.state.checkedQuizzes;
@@ -260,7 +346,7 @@ class ClassDetail extends React.Component<Iprops & ReduxProps> {
                       {item.header}
                       <Checkbox
                         checked={this.state.checkedQuizzes[index]}
-                        onChange={this.handleChangeChecked(index)}
+                        onChange={this.handleChangeCheckedQuizzes(index)}
                         value="checkedG"
                       />
                     </List.Header>
@@ -282,10 +368,19 @@ class ClassDetail extends React.Component<Iprops & ReduxProps> {
     );
   };
 
-  addQuiz = () => {};
+  handleChangeCheckedTeachers = (index: number) => (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    let isQuizzesChecked = this.state.checkedTeachers;
+    isQuizzesChecked[index] = event.target.checked;
+    this.setState({
+      checkedTeachers: isQuizzesChecked
+    });
+  };
 
   renderTeachers = () => {
     // let class_obj = this.props.location.state.classes as types.Class;
+
     if (this.state.class_obj.teachers.length === 0) {
       return (
         <div>
@@ -296,11 +391,19 @@ class ClassDetail extends React.Component<Iprops & ReduxProps> {
       return this.state.class_obj.teachers.map(
         (teacher: types.Teacher, index: number) => {
           return (
-            <List.Item as="div" key={teacher.id}>
+            <List.Item as="div" key={index}>
               <List.Content>
                 <List.Header>
-                  <Icon name="user circle" />
-                  {teacher.username}
+                  <Icon
+                    name="delete"
+                    inverted
+                    circular
+                    link
+                    onClick={() => {
+                      this.handleDeleteTeacher(teacher);
+                    }}
+                  />{" "}
+                  {teacher.username + "                 "}
                 </List.Header>
               </List.Content>
             </List.Item>
@@ -308,6 +411,69 @@ class ClassDetail extends React.Component<Iprops & ReduxProps> {
         }
       );
     }
+  };
+
+  renderTeacherDialog = () => {
+    return (
+      <Dialog
+        open={this.state.dialogAddTeacher}
+        onClose={this.handleCancelTeacher}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Add teacher"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            {
+              <React.Fragment>
+                Please choose a teacher user name.
+                <div style={{ paddingLeft: 0 }}>
+                  <TextField
+                    onChange={this.handleChange("teacherName")}
+                    id="standard-with-placeholder"
+                    label="Teacher user name"
+                    placeholder=""
+                    className={"textField"}
+                    //margin="normal"
+                  />
+                </div>
+              </React.Fragment>
+            }
+            {this.state.teachersArray.length === 0 &&
+              // this.state.quizName.length === 0 &&
+              "Could not found any teachers"}
+          </DialogContentText>
+
+          <List>
+            {this.state.teachersArray.map((item, index) => {
+              return (
+                <List.Item as="div" key={index}>
+                  <List.Content>
+                    <List.Header>
+                      <Icon name="user circle" />
+                      {item.username}
+                      <Checkbox
+                        checked={this.state.checkedTeachers[index]}
+                        onChange={this.handleChangeCheckedTeachers(index)}
+                        value="checkedG"
+                      />
+                    </List.Header>
+                  </List.Content>
+                </List.Item>
+              );
+            })}
+          </List>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={this.handleCancelTeacher} color="red">
+            Cancel
+          </Button>
+          <Button onClick={this.handleAddTeacher} color="green" autoFocus>
+            Add
+          </Button>
+        </DialogActions>
+      </Dialog>
+    );
   };
 
   renderStudents = () => {
@@ -394,36 +560,7 @@ class ClassDetail extends React.Component<Iprops & ReduxProps> {
             </Button>
           </h2>
           <List>{this.renderTeachers()}</List>
-          <Dialog
-            open={this.state.dialogAddTeacher}
-            onClose={this.handleCloseTeacher}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-          >
-            <DialogTitle id="alert-dialog-title">{"Add teacher"}</DialogTitle>
-            <DialogContent>
-              <DialogContentText id="alert-dialog-description">
-                Please enter a teacher username to add.
-              </DialogContentText>
-              <TextField
-                onChange={this.handleChange("teacherUsername")}
-                id="standard-with-placeholder"
-                label="Username"
-                placeholder=""
-                className={"textField"}
-                margin="normal"
-              />
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={this.handleCloseTeacher} color="red">
-                Cancel
-              </Button>
-              <Button onClick={this.handleCloseTeacher} color="green" autoFocus>
-                Add
-              </Button>
-            </DialogActions>
-          </Dialog>
-
+          {this.renderTeacherDialog()}
           <h2>
             Students&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <Button
