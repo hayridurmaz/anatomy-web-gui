@@ -28,7 +28,8 @@ class Home extends React.Component<IProps & ReduxProps> {
               <h2 className={"teal-text"}>ANATOMY Admin!</h2>
               <p>
                 Anatomy tool Admin sayfasına hoşgeldiniz,
-                {" " + this.props.userAccount.username}
+                {this.props.userAccount &&
+                  " " + this.props.userAccount.username}
               </p>
               <p>İletişim:</p>
               <p>Hayri DURMAZ</p>

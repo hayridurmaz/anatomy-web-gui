@@ -9,6 +9,7 @@ interface IProps {}
 interface ReduxProps {
   isLoggedIn?: boolean;
   updateLoggedIn?: (loggedIn: boolean) => any;
+  updateAccount?: (account: types.Account) => any;
 }
 
 class Logout extends React.Component<IProps & ReduxProps> {
@@ -17,6 +18,7 @@ class Logout extends React.Component<IProps & ReduxProps> {
   };
   componentWillMount() {
     this.props.updateLoggedIn(false);
+    this.props.updateAccount(undefined);
     this.setState({ loggedOut: true });
   }
   loginControl() {}
@@ -40,6 +42,9 @@ const mapStateToProps = (state: types.GlobalState) => ({
 const mapDispatchToProps = (dispatch: Dispatch) => ({
   updateLoggedIn: (loggedIn: boolean) => {
     dispatch(actions.updateLoggedIn(loggedIn));
+  },
+  updateAccount: (account: types.Account) => {
+    dispatch(actions.updateAccount(account));
   }
 });
 
