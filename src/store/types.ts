@@ -88,6 +88,17 @@ export interface Class {
   id: number;
 }
 
+export interface Account {
+  id?: number;
+  username: string;
+  password: string;
+  mail: string;
+  name: string;
+  userRole: "Student" | "Teacher";
+  phoneNumber: string;
+  gender: string;
+}
+
 export interface Teacher {
   id: number;
   username: string;
