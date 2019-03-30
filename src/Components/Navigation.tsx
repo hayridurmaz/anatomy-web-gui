@@ -60,10 +60,13 @@ class Navigation extends React.Component<IProps & ReduxProps> {
             </Link>
             <div className="header-right">
               <Link to={"/"}>
-                <p className={"white-text"}>Anasayfa</p>
+                <p className={"white-text"}>Homepage</p>
               </Link>
               <Link to={"/login"}>
-                <p className={"white-text"}>Giriş yap</p>
+                <p className={"white-text"}>Login</p>
+              </Link>
+              <Link to={"/signup"}>
+                <p className={"white-text"}>Sign up</p>
               </Link>
             </div>
           </div>

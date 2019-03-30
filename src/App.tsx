@@ -15,8 +15,7 @@ import AddSystem from "./Pages/AddSystem";
 import AddTopic from "./Pages/AddTopic";
 import AddVideo from "./Pages/AddVideo";
 import SeeQuizzes from "./Pages/SeeQuizzes";
-
-
+import Signup from "./Pages/Signup";
 
 class App extends React.Component {
   constructor(prop: any) {
@@ -51,6 +50,7 @@ class App extends React.Component {
         <Route exact={true} path={"/login"} component={Login} />
         <Route exact={true} path={"/"} component={Home} />
         <Route exact={true} path={"/logout"} component={Logout} />
+        <Route exact={true} path={"/signup"} component={Signup} />
       </div>
     );
   }
