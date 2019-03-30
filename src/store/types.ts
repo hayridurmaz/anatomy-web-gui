@@ -1,7 +1,9 @@
 export const UPDATE_LOGGED_IN = "UPDATE_LOGGED_IN";
+export const UPDATE_ACCOUNT = "UPDATE_ACCOUNT";
 
 export interface GlobalState {
   loggedIn: boolean;
+  Account: Account;
 }
 
 export interface Audios {
@@ -11,6 +13,7 @@ export interface Audios {
 export interface Action {
   type: string;
   loggedIn?: boolean;
+  Account?: Account;
 }
 export interface Survey {
   name: string;

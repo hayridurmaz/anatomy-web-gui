@@ -6,3 +6,10 @@ export function updateLoggedIn(newLoggedIn: boolean): types.Action {
     loggedIn: newLoggedIn
   };
 }
+
+export function updateAccount(newAcc: types.Account): types.Action {
+  return {
+    type: types.UPDATE_ACCOUNT,
+    Account: newAcc
+  };
+}
