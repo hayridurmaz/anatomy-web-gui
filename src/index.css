@@ -19,12 +19,20 @@ body {
   margin: 100px;
 }
 
+.signupContainer {
+  text-align: center;
+}
+.signupSubContainer {
+  text-align: left;
+  display: inline-block;
+  margin: 80px;
+}
 textarea {
   max-width: 100%;
 }
 /* Style the header with a grey background and some padding */
 .header {
-  overflow: hidden;   
+  overflow: hidden;
   background-color: #f1f1f1;
   padding: 20px 10px;
   /* display: flex; */

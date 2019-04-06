@@ -82,7 +82,7 @@ class ImageRow extends React.Component<IProps & ReduxProps> {
             media.thumbnail_url = ""
             console.log(JSON.stringify(media))
 
-            Axios.put("http://localhost:8080/Media/" + mediaId, {
+            Axios.put("http://188.166.49.57:8080/Media/" + mediaId, {
                 data_url: media.data_url,
                 media_type: media.mediaType,
                 thumbnail_url: media.thumbnail_url,
@@ -108,7 +108,7 @@ class ImageRow extends React.Component<IProps & ReduxProps> {
 
     deleteImage = (mediaId: number) => {
         if (window.confirm("Are you sure to modify image?")) {
-            Axios.delete("http://localhost:8080/Media/" + mediaId).then((res) => {
+            Axios.delete("http://188.166.49.57:8080/Media/" + mediaId).then((res) => {
                 console.log(res)
                 if (res.status === 200) {
                     firebase
