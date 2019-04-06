@@ -25,6 +25,7 @@ class Signup extends React.Component<IProps & ReduxProps> {
     gender: "",
     name: "",
     phoneNumber: "",
+    signupCode: "",
     isTeacher: false,
     isSendClicked: false,
     signedUp: false
@@ -51,8 +52,14 @@ class Signup extends React.Component<IProps & ReduxProps> {
       this.state.email === "" ||
       this.state.gender === "" ||
       this.state.name === "" ||
-      this.state.phoneNumber === ""
+      this.state.phoneNumber === "" ||
+      (this.state.signupCode === "" && this.state.isTeacher)
     ) {
+      return;
+    }
+
+    if (this.state.signupCode !== "ANATOMYTOOL2019" && this.state.isTeacher) {
+      window.alert("Sign Up Code is wrong!");
       return;
     }
     console.log(this.state);
@@ -67,7 +74,7 @@ class Signup extends React.Component<IProps & ReduxProps> {
     };
 
     console.log(JSON.stringify(account));
-    if (window.confirm("Are you sure you want to sign up as " + name)) {
+    if (window.confirm("Are you sure you want to sign up as " + account.name)) {
       Axios.post(SERVER_URL + "/Accounts", account)
         .then(response => {
           console.log(response);
@@ -146,6 +153,21 @@ class Signup extends React.Component<IProps & ReduxProps> {
               label="Phone Number"
               placeholder="+905XXXXXXXXXX"
             />
+            {this.state.isTeacher && (
+              <Form.Input
+                fluid
+                error={
+                  this.state.isSendClicked &&
+                  this.state.signupCode.length === 0 &&
+                  this.state.isTeacher
+                }
+                required={this.state.isTeacher}
+                onChange={this.onChangeText}
+                name="signupCode"
+                label="Signup Code"
+                placeholder="Signup Code"
+              />
+            )}
             <Form.Select
               fluid
               error={this.state.isSendClicked && this.state.gender.length === 0}

@@ -25,7 +25,7 @@ interface ReduxProps {
 }
 
 //188.166.49.57
-//localhost
+//188.166.49.57
 
 class AddQuiz extends React.Component<IProps & ReduxProps> {
   state = {

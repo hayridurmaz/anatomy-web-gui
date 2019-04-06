@@ -16,7 +16,7 @@ import ImageRow from "../Components/ImageRow";
 var ProgressBar = require("react-progressbar").default;
 
 //188.166.49.57
-//localhost
+//188.166.49.57
 
 interface IProps {}
 interface ReduxProps {
