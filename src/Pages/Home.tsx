@@ -29,6 +29,7 @@ class Home extends React.Component<IProps & ReduxProps> {
               <p>
                 Anatomy tool Admin sayfasına hoşgeldiniz,
                 {this.props.userAccount &&
+                  this.props.userAccount.username &&
                   " " + this.props.userAccount.username}
               </p>
               <p>İletişim:</p>
