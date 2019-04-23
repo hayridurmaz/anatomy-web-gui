@@ -33,7 +33,7 @@ class AddQuiz extends React.Component<IProps & ReduxProps> {
     news: "",
     isSent: false,
     surveyArray: [],
-
+    quizzesArr: [] as types.Quiz[],
     chosenSystem: -1 as number,
     systemOptions: [],
     topicOptions: [],
@@ -74,7 +74,9 @@ class AddQuiz extends React.Component<IProps & ReduxProps> {
                   Axios.post(SERVER_URL + "/CorrectAnswers", {
                     question_id: questionResponse.data.id,
                     answer_id: answerResponseAns.data.id
-                  }).then(response => {});
+                  }).then(response => {
+                    console.log(response);
+                  });
                 }
               });
             });
@@ -101,6 +103,17 @@ class AddQuiz extends React.Component<IProps & ReduxProps> {
       value: number;
       text: string;
     }
+
+    Axios.get(SERVER_URL + "/Quizzes")
+      .then(response => {
+        return response.data;
+      })
+      .then((quizzes: types.Quiz[]) => {
+        this.setState({ quizzesArr: quizzes }, () =>
+          console.log(this.state.quizzesArr)
+        );
+      });
+
     // stateOptions = [ { key: 'AL', value: 'AL', text: 'Alabama' }, ...  ]
     Axios.get(SERVER_URL + "/Topics")
       .then(response => {
@@ -211,11 +224,17 @@ class AddQuiz extends React.Component<IProps & ReduxProps> {
     });
   };
 
+  renderQuizzes = () => {
+    return this.state.quizzesArr.map((item, index) => {
+      return <li key={String(item.id)}>{item.header}</li>;
+    });
+  };
+
   setQuiz = (): types.Quiz => {
     let quiz = {} as types.Quiz;
     quiz.header = this.state.title;
     quiz.system_id = this.state.chosenSystem;
-    quiz.quiz_type_id = 36;
+    quiz.quiz_type_id = 1;
     quiz.questions = this.state.questions;
 
     console.log(quiz);
@@ -438,7 +457,11 @@ class AddQuiz extends React.Component<IProps & ReduxProps> {
               <input type="submit" value="Submit" />
             </form>
           </div>
-          <h1 className={"teal-text"}> Önceki quizler</h1>
+          <h1 className={"teal-text"}>
+            {" "}
+            Önceki quizler (Detay ekranı eklenecek)
+          </h1>
+          {this.renderQuizzes()}
         </div>
       );
     } else {
