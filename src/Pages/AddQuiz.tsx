@@ -18,6 +18,7 @@ import Axios from "axios";
 import QuestionInput from "../Components/QuestionInput";
 import { bool } from "prop-types";
 import { SERVER_URL } from "src/utils/utils";
+import { stringify } from "querystring";
 
 interface IProps {}
 interface ReduxProps {
@@ -55,34 +56,57 @@ class AddQuiz extends React.Component<IProps & ReduxProps> {
         quiz_type_id: quiz.quiz_type_id,
         system_id: quiz.system_id,
         header: quiz.header
-      }).then((quizResponse: any) => {
-        quiz.questions.forEach((question: types.Question) => {
-          Axios.post(SERVER_URL + "/Questions", {
-            media_id: question.media_id,
-            topic_id: question.topic_id,
-            quiz_id: quizResponse.data.id,
-            qtext: question.qtext,
-            hint: question.hint
-          }).then((questionResponse: any) => {
-            console.log(questionResponse);
-            question.answers.forEach(answer => {
-              Axios.post(SERVER_URL + "/Answers", {
-                question_id: questionResponse.data.id,
-                atext: answer.atext
-              }).then((answerResponseAns: any) => {
-                if (answer.correct) {
-                  Axios.post(SERVER_URL + "/CorrectAnswers", {
+      })
+        .then((quizResponse: any) => {
+          console.log("quizResponse: " + JSON.stringify(quizResponse));
+
+          quiz.questions.forEach((question: types.Question) => {
+            Axios.post(SERVER_URL + "/Questions", {
+              media_id: question.media_id,
+              topic_id: question.topic_id,
+              quiz_id: quizResponse.data.id,
+              qtext: question.qtext,
+              hint: question.hint
+            })
+              .then((questionResponse: any) => {
+                console.log("questionResponse: " + questionResponse);
+                console.log(questionResponse);
+                question.answers.forEach(answer => {
+                  Axios.post(SERVER_URL + "/Answers", {
                     question_id: questionResponse.data.id,
-                    answer_id: answerResponseAns.data.id
-                  }).then(response => {
-                    console.log(response);
-                  });
-                }
+                    atext: answer.atext
+                  })
+                    .then((answerResponseAns: any) => {
+                      console.log("answerResponseAns: " + answerResponseAns);
+                      console.log(answerResponseAns);
+                      if (answer.correct) {
+                        Axios.post(SERVER_URL + "/CorrectAnswers", {
+                          question_id: questionResponse.data.id,
+                          answer_id: answerResponseAns.data.id
+                        })
+                          .then(response => {
+                            console.log("Correctanswer response: " + response);
+                            console.log(response);
+                            alert("Quiz başarıyla eklendi.");
+                          })
+                          .catch(error => {
+                            alert(error);
+                          });
+                      }
+                    })
+                    .catch(error => {
+                      alert(error);
+                    });
+                });
+              })
+              .catch(error => {
+                alert(error);
               });
-            });
           });
+        })
+        .catch(error => {
+          alert(error);
         });
-      });
       //this.setState({ title: "", });
     }
     event.preventDefault();
