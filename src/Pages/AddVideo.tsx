@@ -9,7 +9,7 @@ import ToggleButton from "react-toggle-button";
 import { getDate, SERVER_URL } from "../utils/utils";
 import FileUploader from "react-firebase-file-uploader";
 import Axios from "axios";
-import { Dropdown } from "semantic-ui-react";
+import { Dropdown, Label, Input, TextArea } from "semantic-ui-react";
 import { type } from "os";
 import VideoRow from "../Components/VideoRow";
 
@@ -29,7 +29,8 @@ class AddVideo extends React.Component<IProps & ReduxProps> {
     chosenTopics: [] as number[],
     chosenSystem: -1 as number,
     dataUrl: "",
-    videos: [] as types.Media[]
+    videos: [] as types.Media[],
+    description: ""
   };
 
   handleSubmit = event => {
@@ -76,6 +77,7 @@ class AddVideo extends React.Component<IProps & ReduxProps> {
       media.topic_ids = this.state.chosenTopics;
       media.thumbnail_url = "";
       media.date = this.state.tarih;
+      media.description = this.state.description;
       console.log(JSON.stringify(media));
 
       Axios.post(SERVER_URL + "/Media", {
@@ -84,7 +86,8 @@ class AddVideo extends React.Component<IProps & ReduxProps> {
         thumbnail_url: media.thumbnail_url,
         system_id: media.system_id,
         topic_ids: media.topic_ids,
-        date: media.date
+        date: media.date,
+        description: media.description
       })
         .then(res => {
           console.log(res);
@@ -284,6 +287,26 @@ class AddVideo extends React.Component<IProps & ReduxProps> {
               </div>
 
               <div style={{ flex: 1, margin: 10 }}>
+                <Label>
+                  <TextArea
+                    onChange={e => {
+                      this.setState(
+                        {
+                          description: (e.target as HTMLTextAreaElement).value
+                        },
+                        () => {}
+                      );
+                    }}
+                    value={this.state.description}
+                    style={{ width: 500 }}
+                    size="small"
+                    icon="arrow left"
+                    placeholder="Description"
+                  />
+                </Label>
+              </div>
+
+              <div style={{ flex: 1, margin: 10 }}>
                 <label>
                   Choose video:
                   <FileUploader
@@ -305,6 +328,7 @@ class AddVideo extends React.Component<IProps & ReduxProps> {
                   {/*Date: */}
                   <input
                     hidden
+                    onChange={() => {}}
                     value={this.state.tarih}
                     style={{ marginLeft: 20 }}
                   />

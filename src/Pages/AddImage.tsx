@@ -9,7 +9,7 @@ import ToggleButton from "react-toggle-button";
 import { getDate, SERVER_URL } from "../utils/utils";
 import FileUploader from "react-firebase-file-uploader";
 import Axios from "axios";
-import { Dropdown, Label, Input } from "semantic-ui-react";
+import { Dropdown, Label, Input, TextArea } from "semantic-ui-react";
 import { type } from "os";
 import ImageRow from "../Components/ImageRow";
 
@@ -80,6 +80,7 @@ class AddImage extends React.Component<IProps & ReduxProps> {
       media.topic_ids = this.state.chosenTopics;
       media.thumbnail_url = "";
       media.date = this.state.tarih;
+      media.description = this.state.description;
 
       Axios.post(SERVER_URL + "/Media", {
         data_url: media.data_url,
@@ -297,13 +298,17 @@ class AddImage extends React.Component<IProps & ReduxProps> {
 
               <div style={{ flex: 1, margin: 10 }}>
                 <Label>
-                  <span style={{ marginRight: 5 }}>Description:</span>
-                  <Input
+                  <TextArea
                     onChange={e => {
-                      this.setState({ description: e.target.value }, () => {});
+                      this.setState(
+                        {
+                          description: (e.target as HTMLTextAreaElement).value
+                        },
+                        () => {}
+                      );
                     }}
                     value={this.state.description}
-                    style={{ marginLeft: 20 }}
+                    style={{ width: 500 }}
                     size="small"
                     icon="arrow left"
                     placeholder="Description"

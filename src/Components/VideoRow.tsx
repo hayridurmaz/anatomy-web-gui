@@ -187,7 +187,7 @@ class VideoRow extends React.Component<IProps & ReduxProps> {
       topicInfo = (
         <Label.Group size="large" style={{ marginLeft: 20 }}>
           {this.props.item.topics.map((topic: types.Topic) => {
-            return <Label>{topic.name}</Label>;
+            return <Label key={topic.id}>{topic.name}</Label>;
           })}
         </Label.Group>
       );
