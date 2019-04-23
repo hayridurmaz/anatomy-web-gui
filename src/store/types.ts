@@ -55,7 +55,7 @@ export interface QuizType {
   name: string;
 }
 
-export enum mediaTypes {
+export enum media_types {
   Image,
   Video
 }
@@ -74,13 +74,14 @@ export interface Media {
   index: number;
   id: number;
   data_url: string;
-  mediaType: mediaTypes;
+  media_type: media_types;
   system_id: number;
   topic_ids: number[];
   thumbnail_url: string;
   date: string;
   topics?: Topic[];
   system?: System;
+  description: string;
 }
 
 export interface Class {

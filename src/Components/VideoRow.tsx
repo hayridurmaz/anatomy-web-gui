@@ -83,7 +83,7 @@ class VideoRow extends React.Component<IProps & ReduxProps> {
       event.preventDefault();
       let media = {} as types.Media;
       media.data_url = this.props.item.data_url;
-      media.mediaType = this.props.item.mediaType;
+      media.media_type = this.props.item.media_type;
       media.system_id = this.state.chosenSystem;
       media.topic_ids = this.state.chosenTopics;
       media.thumbnail_url = "";
@@ -91,7 +91,7 @@ class VideoRow extends React.Component<IProps & ReduxProps> {
 
       Axios.put(SERVER_URL + "/Media/" + mediaId, {
         data_url: media.data_url,
-        media_type: media.mediaType,
+        media_type: media.media_type,
         thumbnail_url: media.thumbnail_url,
         system_id: media.system_id,
         topic_ids: media.topic_ids

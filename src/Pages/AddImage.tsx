@@ -9,7 +9,7 @@ import ToggleButton from "react-toggle-button";
 import { getDate, SERVER_URL } from "../utils/utils";
 import FileUploader from "react-firebase-file-uploader";
 import Axios from "axios";
-import { Dropdown } from "semantic-ui-react";
+import { Dropdown, Label, Input } from "semantic-ui-react";
 import { type } from "os";
 import ImageRow from "../Components/ImageRow";
 
@@ -32,7 +32,8 @@ class AddImage extends React.Component<IProps & ReduxProps> {
     chosenTopics: [] as number[],
     chosenSystem: -1 as number,
     dataUrl: "",
-    images: [] as types.Media[]
+    images: [] as types.Media[],
+    description: "" as string
   };
 
   handleSubmit = event => {
@@ -74,7 +75,7 @@ class AddImage extends React.Component<IProps & ReduxProps> {
       //console.log(this.state.dataUrl)
       let media = {} as types.Media;
       media.data_url = this.state.dataUrl;
-      media.mediaType = types.mediaTypes.Image;
+      media.media_type = types.media_types.Image;
       media.system_id = this.state.chosenSystem;
       media.topic_ids = this.state.chosenTopics;
       media.thumbnail_url = "";
@@ -82,11 +83,12 @@ class AddImage extends React.Component<IProps & ReduxProps> {
 
       Axios.post(SERVER_URL + "/Media", {
         data_url: media.data_url,
-        media_type: media.mediaType,
+        media_type: media.media_type,
         thumbnail_url: media.thumbnail_url,
         system_id: media.system_id,
         topic_ids: media.topic_ids,
-        date: media.date
+        date: media.date,
+        description: media.description
       })
         .then(res => {
           console.log(res);
@@ -108,16 +110,16 @@ class AddImage extends React.Component<IProps & ReduxProps> {
 
   componentWillMount() {
     this.setState({ tarih: getDate() });
-    firebase
-      .database()
-      .ref("/councilNews")
-      .on("value", response => {
-        let arr = [];
-        response.forEach(child => {
-          arr.push(child.val());
-          this.setState({ newsArray: arr });
-        });
-      });
+    // firebase
+    //   .database()
+    //   .ref("/councilNews")
+    //   .on("value", response => {
+    //     let arr = [];
+    //     response.forEach(child => {
+    //       arr.push(child.val());
+    //       this.setState({ newsArray: arr });
+    //     });
+    //   });
     this.getDataFromServer();
   }
 
@@ -171,11 +173,19 @@ class AddImage extends React.Component<IProps & ReduxProps> {
       .then((allMedia: types.Media[]) => {
         let images = [];
         allMedia.forEach(item => {
-          if (String(item.mediaType) === types.mediaTypes[0]) {
+          console.log(item);
+          console.log(String(item.media_type));
+          console.log(types.media_types[0]);
+
+          if (String(item.media_type) == types.media_types[0]) {
+            console.log("if içi");
             images.push(item);
           }
         });
         this.setState({ images: images }, () => console.log(this.state.images));
+      })
+      .catch(error => {
+        console.error(`error` + error);
       });
   };
 
@@ -286,6 +296,22 @@ class AddImage extends React.Component<IProps & ReduxProps> {
               </div>
 
               <div style={{ flex: 1, margin: 10 }}>
+                <Label>
+                  <span style={{ marginRight: 5 }}>Description:</span>
+                  <Input
+                    onChange={e => {
+                      this.setState({ description: e.target.value }, () => {});
+                    }}
+                    value={this.state.description}
+                    style={{ marginLeft: 20 }}
+                    size="small"
+                    icon="arrow left"
+                    placeholder="Description"
+                  />
+                </Label>
+              </div>
+
+              <div style={{ flex: 1, margin: 10 }}>
                 <label>
                   Choose image:
                   <FileUploader
@@ -307,6 +333,7 @@ class AddImage extends React.Component<IProps & ReduxProps> {
                   {/*Date: */}
                   <input
                     hidden
+                    onChange={() => {}}
                     value={this.state.tarih}
                     style={{ marginLeft: 20 }}
                   />

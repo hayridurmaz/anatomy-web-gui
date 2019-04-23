@@ -71,7 +71,7 @@ class AddVideo extends React.Component<IProps & ReduxProps> {
       //console.log(this.state.dataUrl)
       let media = {} as types.Media;
       media.data_url = this.state.dataUrl;
-      media.mediaType = types.mediaTypes.Video;
+      media.media_type = types.media_types.Video;
       media.system_id = this.state.chosenSystem;
       media.topic_ids = this.state.chosenTopics;
       media.thumbnail_url = "";
@@ -80,7 +80,7 @@ class AddVideo extends React.Component<IProps & ReduxProps> {
 
       Axios.post(SERVER_URL + "/Media", {
         data_url: media.data_url,
-        media_type: media.mediaType,
+        media_type: media.media_type,
         thumbnail_url: media.thumbnail_url,
         system_id: media.system_id,
         topic_ids: media.topic_ids,
@@ -169,7 +169,7 @@ class AddVideo extends React.Component<IProps & ReduxProps> {
       .then((allMedia: types.Media[]) => {
         let videos = [];
         allMedia.forEach((item: types.Media) => {
-          if (String(item.mediaType) === types.mediaTypes[1]) {
+          if (String(item.media_type) === types.media_types[1]) {
             videos.push(item);
           }
         });
